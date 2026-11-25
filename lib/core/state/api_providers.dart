@@ -4,6 +4,7 @@ import '../api/api_client.dart';
 import '../auth/auth_controller.dart';
 import '../models/member.dart';
 import '../models/record_item.dart';
+import 'vitals_providers.dart';
 
 // ─── Family members ───────────────────────────────────────────
 
@@ -170,5 +171,7 @@ class RecordActions {
     _ref.invalidate(recordsProvider);
     _ref.invalidate(recordProvider(r.id));
     _ref.invalidate(summaryProvider(r.memberId));
+    _ref.invalidate(vitalsSummaryProvider(r.memberId));
+    _ref.invalidate(vitalSeriesProvider);
   }
 }

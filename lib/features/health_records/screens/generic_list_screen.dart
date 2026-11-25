@@ -15,6 +15,7 @@ import '../../../core/widgets/generic_record_card.dart';
 import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/standard_app_header.dart';
+import '../../vitals/config/vital_chart_config.dart';
 
 class GenericListScreen extends ConsumerStatefulWidget {
   final String moduleKey;
@@ -61,7 +62,18 @@ class _GenericListScreenState extends ConsumerState<GenericListScreen> {
       body: Column(
         children: [
           StandardAppHeader(
-              title: config.domainName, onBack: () => context.pop()),
+            title: config.domainName,
+            onBack: () => context.pop(),
+            actions: [
+              if (VitalChartConfig.getConfig(widget.moduleKey) != null)
+                IconButton(
+                  tooltip: 'Trends',
+                  icon: const Icon(Icons.show_chart, color: Colors.white),
+                  onPressed: () => context.push(
+                      Routes.vitalChart(widget.moduleKey, widget.memberId)),
+                ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.all(AppDimens.spacingL),
             child: TextField(

@@ -41,11 +41,13 @@ class VitalHealthZones {
     this.description = '',
   });
 
+  /// Zones are in ascending order; a value between two zones (99.5 between
+  /// 70–99 and 100–125) belongs to the lower one it has passed the start of.
   HealthZone getZoneForValue(double value) {
-    for (final zone in zones) {
-      if (zone.contains(value)) return zone;
+    for (final zone in zones.reversed) {
+      if (value >= zone.min) return zone;
     }
-    return zones.last;
+    return zones.first;
   }
 }
 
@@ -124,6 +126,7 @@ class HealthZoneDefinitions {
 
   static const bloodGlucose = VitalHealthZones(
     vitalName: 'Blood Glucose',
+    description: 'Ranges for fasting readings (mg/dL).',
     unit: 'mg/dL',
     zones: [
       HealthZone(
@@ -138,21 +141,21 @@ class HealthZoneDefinitions {
         min: 70,
         max: 99,
         color: AppColors.zoneNormal,
-        label: 'Normal',
+        label: 'In fasting range',
       ),
       HealthZone(
         status: HealthZoneStatus.warningHigh,
         min: 100,
         max: 125,
         color: AppColors.zoneWarning,
-        label: 'Pre-diabetic',
+        label: 'Above range',
       ),
       HealthZone(
         status: HealthZoneStatus.criticalHigh,
         min: 126,
         max: 500,
         color: AppColors.zoneCriticalHigh,
-        label: 'High',
+        label: 'Well above range',
       ),
     ],
   );

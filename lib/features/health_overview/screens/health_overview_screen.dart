@@ -11,6 +11,7 @@ import '../../../core/state/api_providers.dart';
 import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/colored_avatar.dart';
 import '../../../core/widgets/standard_app_header.dart';
+import '../../vitals/widgets/vitals_dashboard.dart';
 
 class HealthOverviewScreen extends ConsumerStatefulWidget {
   final String memberId;
@@ -32,7 +33,6 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
     final theme = Theme.of(context);
 
     final quickHealthModules = ModuleRegistry.quickHealthModules;
-    final vitalModules = ModuleRegistry.vitalOverviewModules;
 
     return Scaffold(
       body: Column(
@@ -93,35 +93,35 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
 
           const SizedBox(height: AppDimens.spacingM),
 
-          // Module grid
+          // Vitals: dashboard with latest values and trends. Records: module grid.
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(AppDimens.spacingL),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 0.82,
-                crossAxisSpacing: AppDimens.spacingM,
-                mainAxisSpacing: AppDimens.spacingM,
-              ),
-              itemCount: _selectedTab == 0
-                  ? quickHealthModules.length
-                  : vitalModules.length,
-              itemBuilder: (_, i) {
-                final module =
-                    _selectedTab == 0 ? quickHealthModules[i] : vitalModules[i];
-                // Lab results come with report upload in the next step.
-                final available = module.domainKey != 'lab_result';
-                return _ModuleCard(
-                  config: module,
-                  count: available ? counts[module.domainKey] ?? 0 : null,
-                  onTap: available
-                      ? () => context.push(
-                          Routes.healthList(module.domainKey, widget.memberId))
-                      : () => showMessage(context,
-                          'Lab results and report upload are coming next'),
-                );
-              },
-            ),
+            child: _selectedTab == 1
+                ? VitalsDashboard(memberId: widget.memberId)
+                : GridView.builder(
+                    padding: const EdgeInsets.all(AppDimens.spacingL),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.82,
+                      crossAxisSpacing: AppDimens.spacingM,
+                      mainAxisSpacing: AppDimens.spacingM,
+                    ),
+                    itemCount: quickHealthModules.length,
+                    itemBuilder: (_, i) {
+                      final module = quickHealthModules[i];
+                      // Lab results come with report upload in the next step.
+                      final available = module.domainKey != 'lab_result';
+                      return _ModuleCard(
+                        config: module,
+                        count: available ? counts[module.domainKey] ?? 0 : null,
+                        onTap: available
+                            ? () => context.push(Routes.healthList(
+                                module.domainKey, widget.memberId))
+                            : () => showMessage(context,
+                                'Lab results and report upload are coming next'),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

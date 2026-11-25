@@ -17,6 +17,7 @@ import '../features/health_records/screens/generic_list_screen.dart';
 import '../features/health_records/screens/generic_form_screen.dart';
 import '../features/health_records/screens/generic_detail_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
+import '../features/vitals/screens/vital_trend_screen.dart';
 import '../features/privacy/screens/privacy_and_data_screen.dart';
 import '../features/privacy/screens/data_export_screen.dart';
 import '../features/privacy/screens/delete_account_screen.dart';
@@ -119,6 +120,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/health-overview/:memberId',
         builder: (_, state) =>
             HealthOverviewScreen(memberId: state.pathParameters['memberId']!),
+      ),
+
+      // Vital trends
+      GoRoute(
+        path: '/vitals/:vitalKey/:memberId/chart',
+        builder: (_, state) => VitalTrendScreen(
+          moduleKey: state.pathParameters['vitalKey']!,
+          memberId: state.pathParameters['memberId']!,
+        ),
       ),
 
       // Generic health module routes
