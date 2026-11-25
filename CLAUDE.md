@@ -21,8 +21,6 @@ flutter analyze            # Lint
 dart format .              # Format code
 ```
 
-Running locally needs the backend on port 8000: see "Run everything locally" in [README.md](README.md). In short, from `healthkeeper-backend`: `uv run uvicorn healthkeeper.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir src`. Use "Developer sign-in (local server)" in debug builds.
-
 ## Architecture
 
 ### Config-driven health module system
