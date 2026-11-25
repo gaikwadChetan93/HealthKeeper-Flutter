@@ -16,6 +16,10 @@ import '../features/health_overview/screens/health_overview_screen.dart';
 import '../features/health_records/screens/generic_list_screen.dart';
 import '../features/health_records/screens/generic_form_screen.dart';
 import '../features/health_records/screens/generic_detail_screen.dart';
+import '../features/labs/screens/add_lab_report_screen.dart';
+import '../features/labs/screens/lab_report_screen.dart';
+import '../features/labs/screens/lab_results_screen.dart';
+import '../features/labs/screens/lab_test_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/vitals/screens/vital_trend_screen.dart';
 import '../features/privacy/screens/privacy_and_data_screen.dart';
@@ -120,6 +124,30 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/health-overview/:memberId',
         builder: (_, state) =>
             HealthOverviewScreen(memberId: state.pathParameters['memberId']!),
+      ),
+
+      // Lab results
+      GoRoute(
+        path: '/labs/:memberId',
+        builder: (_, state) =>
+            LabResultsScreen(memberId: state.pathParameters['memberId']!),
+      ),
+      GoRoute(
+        path: '/labs/:memberId/add',
+        builder: (_, state) =>
+            AddLabReportScreen(memberId: state.pathParameters['memberId']!),
+      ),
+      GoRoute(
+        path: '/labs/:memberId/test/:testId',
+        builder: (_, state) => LabTestScreen(
+          memberId: state.pathParameters['memberId']!,
+          testId: state.pathParameters['testId']!,
+        ),
+      ),
+      GoRoute(
+        path: '/lab-report/:reportId',
+        builder: (_, state) =>
+            LabReportScreen(reportId: state.pathParameters['reportId']!),
       ),
 
       // Vital trends

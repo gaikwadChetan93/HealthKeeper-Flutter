@@ -8,6 +8,7 @@ import '../../../app/theme/vital_module_colors.dart';
 import '../../../core/config/module_registry.dart';
 import '../../../core/models/domain_config.dart';
 import '../../../core/state/api_providers.dart';
+import '../../../core/state/lab_providers.dart';
 import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/colored_avatar.dart';
 import '../../../core/widgets/standard_app_header.dart';
@@ -30,6 +31,8 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
     final member = ref.watch(memberProvider(widget.memberId));
     final counts =
         ref.watch(summaryProvider(widget.memberId)).valueOrNull ?? const {};
+    final labReports =
+        ref.watch(labReportsProvider(widget.memberId)).valueOrNull?.length;
     final theme = Theme.of(context);
 
     final quickHealthModules = ModuleRegistry.quickHealthModules;
@@ -109,16 +112,16 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
                     itemCount: quickHealthModules.length,
                     itemBuilder: (_, i) {
                       final module = quickHealthModules[i];
-                      // Lab results come with report upload in the next step.
-                      final available = module.domainKey != 'lab_result';
+                      final isLabs = module.domainKey == 'lab_result';
                       return _ModuleCard(
                         config: module,
-                        count: available ? counts[module.domainKey] ?? 0 : null,
-                        onTap: available
-                            ? () => context.push(Routes.healthList(
-                                module.domainKey, widget.memberId))
-                            : () => showMessage(context,
-                                'Lab results and report upload are coming next'),
+                        count:
+                            isLabs ? labReports : counts[module.domainKey] ?? 0,
+                        countLabel: isLabs ? 'report' : 'record',
+                        onTap: () => context.push(isLabs
+                            ? Routes.labs(widget.memberId)
+                            : Routes.healthList(
+                                module.domainKey, widget.memberId)),
                       );
                     },
                   ),
@@ -133,10 +136,17 @@ class _ModuleCard extends StatefulWidget {
   final DomainConfig config;
   final VoidCallback onTap;
 
-  /// Records saved in this module; null when the module isn't available yet.
+  /// Records saved in this module; null while it is loading.
   final int? count;
 
-  const _ModuleCard({required this.config, required this.onTap, this.count});
+  /// What is being counted: "record", or "report" for lab results.
+  final String countLabel;
+
+  const _ModuleCard(
+      {required this.config,
+      required this.onTap,
+      this.count,
+      this.countLabel = 'record'});
 
   @override
   State<_ModuleCard> createState() => _ModuleCardState();
@@ -190,10 +200,10 @@ class _ModuleCardState extends State<_ModuleCard> {
                 ),
                 Text(
                   widget.count == null
-                      ? 'Soon'
+                      ? ''
                       : widget.count == 0
-                          ? 'No records'
-                          : '${widget.count} record${widget.count == 1 ? '' : 's'}',
+                          ? 'No ${widget.countLabel}s'
+                          : '${widget.count} ${widget.countLabel}${widget.count == 1 ? '' : 's'}',
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                     fontSize: 10,

@@ -32,6 +32,13 @@ class Routes {
   static String healthDetail(String moduleKey, String recordId) =>
       '/health/$moduleKey/detail/$recordId';
 
+  // Lab results
+  static String labs(String memberId) => '/labs/$memberId';
+  static String labAdd(String memberId) => '/labs/$memberId/add';
+  static String labTest(String memberId, String testId) =>
+      '/labs/$memberId/test/$testId';
+  static String labReport(String reportId) => '/lab-report/$reportId';
+
   // Vital charts
   static String vitalChart(String vitalKey, String memberId) =>
       '/vitals/$vitalKey/$memberId/chart';

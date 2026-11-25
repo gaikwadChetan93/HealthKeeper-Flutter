@@ -58,8 +58,9 @@ class TrendBarChart extends StatelessWidget with ChartStyle {
               reservedSize: 24,
               getTitlesWidget: (v, meta) {
                 final i = v.toInt();
-                if (i < 0 || i >= points.length || i % labelEvery != 0)
+                if (i < 0 || i >= points.length || i % labelEvery != 0) {
                   return const SizedBox.shrink();
+                }
                 return Padding(
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(axisLabel(series, points[i].date),

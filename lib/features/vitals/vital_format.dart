@@ -32,8 +32,9 @@ class VitalFormat {
 
   /// The unit to show after [values], or empty when it is already included.
   static String unit(List<VitalMetric> metrics) {
-    if (metrics.length == 1 || metrics[0].unit == metrics[1].unit)
+    if (metrics.length == 1 || metrics[0].unit == metrics[1].unit) {
       return metrics.first.unit;
+    }
     return '';
   }
 
