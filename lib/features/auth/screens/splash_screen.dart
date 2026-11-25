@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../app/route_constants.dart';
+import '../../../core/auth/auth_controller.dart';
 
-class SplashScreen extends StatefulWidget {
+/// Shown while the app checks whether the person is still signed in.
+/// The router moves on as soon as that is known.
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
@@ -30,10 +32,6 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
     _controller.forward();
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) context.go(Routes.welcome);
-    });
   }
 
   @override
@@ -45,6 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final startupError = ref.watch(authProvider.select((s) => s.startupError));
 
     return Scaffold(
       body: Container(
@@ -94,6 +93,25 @@ class _SplashScreenState extends State<SplashScreen>
                       color: Colors.white70,
                     ),
                   ),
+                  if (startupError != null) ...[
+                    const SizedBox(height: 32),
+                    Text(
+                      startupError,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: Colors.white),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.white70),
+                      ),
+                      onPressed: () =>
+                          ref.read(authProvider.notifier).restore(),
+                      child: const Text('Try again'),
+                    ),
+                  ],
                 ],
               ),
             ),

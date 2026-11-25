@@ -9,6 +9,12 @@ class AppDatePickerField extends StatelessWidget {
   final bool allowFuture;
   final bool allowPast;
   final bool includeTime;
+
+  /// Where the picker opens when nothing is chosen yet (default: today).
+  final DateTime? initialPickerDate;
+
+  /// Open on year selection, e.g. for a date of birth.
+  final bool startWithYear;
   final ValueChanged<DateTime?>? onChanged;
 
   const AppDatePickerField({
@@ -20,6 +26,8 @@ class AppDatePickerField extends StatelessWidget {
     this.allowFuture = true,
     this.allowPast = true,
     this.includeTime = false,
+    this.initialPickerDate,
+    this.startWithYear = false,
     this.onChanged,
   });
 
@@ -30,7 +38,10 @@ class AppDatePickerField extends StatelessWidget {
 
     final date = await showDatePicker(
       context: context,
-      initialDate: value ?? now,
+      initialDate: value ?? initialPickerDate ?? now,
+      initialDatePickerMode: startWithYear && value == null
+          ? DatePickerMode.year
+          : DatePickerMode.day,
       firstDate: firstDate,
       lastDate: lastDate,
     );
@@ -44,7 +55,11 @@ class AppDatePickerField extends StatelessWidget {
       );
       if (time != null) {
         onChanged?.call(DateTime(
-          date.year, date.month, date.day, time.hour, time.minute,
+          date.year,
+          date.month,
+          date.day,
+          time.hour,
+          time.minute,
         ));
       }
     } else {

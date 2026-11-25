@@ -7,21 +7,28 @@ class FormDataState {
   final Map<String, String> formErrors;
   final bool isSubmitting;
 
+  /// Goes up each time the form is filled from a saved record, so fields
+  /// that keep their own text (initialValue) are rebuilt with it.
+  final int prefillGeneration;
+
   const FormDataState({
     this.formData = const {},
     this.formErrors = const {},
     this.isSubmitting = false,
+    this.prefillGeneration = 0,
   });
 
   FormDataState copyWith({
     Map<String, dynamic>? formData,
     Map<String, String>? formErrors,
     bool? isSubmitting,
+    int? prefillGeneration,
   }) {
     return FormDataState(
       formData: formData ?? this.formData,
       formErrors: formErrors ?? this.formErrors,
       isSubmitting: isSubmitting ?? this.isSubmitting,
+      prefillGeneration: prefillGeneration ?? this.prefillGeneration,
     );
   }
 }
@@ -41,7 +48,13 @@ class FormStateNotifier extends StateNotifier<FormDataState> {
   }
 
   void prefillForm(Map<String, dynamic> data) {
-    state = state.copyWith(formData: data);
+    state = state.copyWith(
+        formData: data, prefillGeneration: state.prefillGeneration + 1);
+  }
+
+  /// Errors the server found, keyed by field.
+  void setErrors(Map<String, String> errors) {
+    state = state.copyWith(formErrors: errors);
   }
 
   bool validate(List<FieldDescriptor> fields) {
@@ -75,7 +88,7 @@ class FormStateNotifier extends StateNotifier<FormDataState> {
   }
 
   void clearForm() {
-    state = const FormDataState();
+    state = FormDataState(prefillGeneration: state.prefillGeneration + 1);
   }
 
   void setSubmitting(bool value) {

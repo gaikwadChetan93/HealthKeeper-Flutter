@@ -4,11 +4,15 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/route_constants.dart';
 import '../../../app/theme/app_dimens.dart';
-import '../../../core/state/module_providers.dart';
+import '../../../core/mock/mock_data.dart';
+import '../../../core/models/doctor.dart';
 import '../../../core/widgets/animated_fab.dart';
 import '../../../core/widgets/doctor_card.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../../core/widgets/standard_app_header.dart';
+
+/// Doctors arrive in a later release; until then this shows sample data.
+final doctorsProvider = StateProvider<List<Doctor>>((ref) => MockData.doctors);
 
 class MyDoctorsScreen extends ConsumerWidget {
   const MyDoctorsScreen({super.key});
@@ -32,7 +36,8 @@ class MyDoctorsScreen extends ConsumerWidget {
                   )
                 : GridView.builder(
                     padding: const EdgeInsets.all(AppDimens.spacingL),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.85,
                       crossAxisSpacing: AppDimens.spacingM,
