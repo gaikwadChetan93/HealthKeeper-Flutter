@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
+
 class VitalColors {
   final Color backgroundColor;
   final Color iconTint;
@@ -10,55 +12,61 @@ class VitalColors {
   });
 }
 
+/// Per-vital accent colours, retuned to the redesign's muted hue set.
+///
+/// Structure is unchanged from before the redesign — same lookup map, same
+/// two accessors — only the hex values moved from the old bright Material
+/// palette to the design's 10 muted hues (each hue also colours that vital's
+/// entry in [AppColors], so charts/badges/icons stay consistent).
 class VitalModuleColors {
   VitalModuleColors._();
 
   static const _colorMap = <String, VitalColors>{
     'blood_pressure': VitalColors(
-      backgroundColor: Color(0xFFFEE0C4),
-      iconTint: Color(0xFFF97035),
+      backgroundColor: Color(0xFFF3E3DF),
+      iconTint: AppColors.hueBloodPressure,
     ),
     'heart_rate': VitalColors(
-      backgroundColor: Color(0xFFFFDFE5),
-      iconTint: Color(0xFFFF6B8A),
-    ),
-    'temperature': VitalColors(
-      backgroundColor: Color(0xFFE3F2FD),
-      iconTint: Color(0xFF42A5F5),
-    ),
-    'oxygen_saturation': VitalColors(
-      backgroundColor: Color(0xFFFFF9E6),
-      iconTint: Color(0xFFFFB300),
-    ),
-    'weight': VitalColors(
-      backgroundColor: Color(0xFFE8F5E9),
-      iconTint: Color(0xFF66BB6A),
+      backgroundColor: Color(0xFFF2E1E5),
+      iconTint: AppColors.hueHeartRate,
     ),
     'blood_glucose': VitalColors(
-      backgroundColor: Color(0xFFF3E5F5),
-      iconTint: Color(0xFFAB47BC),
+      backgroundColor: Color(0xFFEAE3F0),
+      iconTint: AppColors.hueGlucose,
     ),
-    'sleep': VitalColors(
-      backgroundColor: Color(0xFFFFE5F0),
-      iconTint: Color(0xFFFF4081),
+    'oxygen_saturation': VitalColors(
+      backgroundColor: Color(0xFFE1E9EE),
+      iconTint: AppColors.hueOxygen,
     ),
-    'exercise': VitalColors(
-      backgroundColor: Color(0xFFE0F7FA),
-      iconTint: Color(0xFF26C6DA),
-    ),
-    'hydration': VitalColors(
-      backgroundColor: Color(0xFFE8F5E9),
-      iconTint: Color(0xFF66BB6A),
+    'weight': VitalColors(
+      backgroundColor: Color(0xFFE1EBE5),
+      iconTint: AppColors.hueWeight,
     ),
     'height': VitalColors(
-      backgroundColor: Color(0xFFFFE5F0),
-      iconTint: Color(0xFFFF4081),
+      backgroundColor: Color(0xFFE1EBE5),
+      iconTint: AppColors.hueWeight,
+    ),
+    'temperature': VitalColors(
+      backgroundColor: Color(0xFFF1E6D8),
+      iconTint: AppColors.hueTemperature,
+    ),
+    'sleep': VitalColors(
+      backgroundColor: Color(0xFFE3E4EF),
+      iconTint: AppColors.hueSleep,
+    ),
+    'hydration': VitalColors(
+      backgroundColor: Color(0xFFDFEAEA),
+      iconTint: AppColors.hueHydration,
+    ),
+    'exercise': VitalColors(
+      backgroundColor: Color(0xFFE5EADC),
+      iconTint: AppColors.hueActivity,
     ),
   };
 
   static const _defaultColors = VitalColors(
-    backgroundColor: Color(0xFFF5F5F5),
-    iconTint: Color(0xFF757575),
+    backgroundColor: AppColors.surfaceMuted,
+    iconTint: AppColors.textMuted,
   );
 
   static Color getBackgroundColor(String moduleKey) =>

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_dimens.dart';
+import '../../../app/theme/app_typography.dart';
+import '../../../core/widgets/hk_primary_button.dart';
 import '../../../core/widgets/standard_app_header.dart';
 
 enum _BackupState { notSignedIn, noBackups, hasBackups }
@@ -20,6 +23,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
           StandardAppHeader(
@@ -40,7 +44,9 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
                 ),
               _BackupState.hasBackups => _HasBackupsView(
                   onRefresh: () {
-                    // TODO: Refresh backup list
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Backup list refreshed'), behavior: SnackBarBehavior.floating),
+                    );
                   },
                 ),
             },
@@ -58,48 +64,22 @@ class _NotSignedInView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Padding(
-      padding: const EdgeInsets.all(AppDimens.spacingXXL),
+      padding: const EdgeInsets.all(28),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.cloud_off_outlined,
-            size: 80,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(height: AppDimens.spacingXL),
+          const Icon(Icons.cloud_off_outlined, size: 56, color: AppColors.textFaint),
+          const SizedBox(height: 18),
+          Text('Sign in to back up', style: AppTypography.screenTitle.copyWith(fontSize: 20), textAlign: TextAlign.center),
+          const SizedBox(height: 10),
           Text(
-            'Sign In to Back Up',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            'Sign in with your account to back up your health data securely to the cloud and restore it on any device.',
+            style: AppTypography.bodySecondary,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppDimens.spacingM),
-          Text(
-            'Sign in with your account to back up your health data '
-            'securely to the cloud and restore it on any device.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppDimens.spacingXXL),
-          FilledButton.icon(
-            onPressed: onSignIn,
-            icon: const Icon(Icons.login),
-            label: const Text('Sign In'),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimens.spacingXXL,
-                vertical: AppDimens.spacingL,
-              ),
-            ),
-          ),
+          const SizedBox(height: 26),
+          HkPrimaryButton(label: 'Sign in', icon: Icons.login, onPressed: onSignIn, expand: false),
         ],
       ),
     );
@@ -113,48 +93,22 @@ class _NoBackupsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Padding(
-      padding: const EdgeInsets.all(AppDimens.spacingXXL),
+      padding: const EdgeInsets.all(28),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.cloud_outlined,
-            size: 80,
-            color: colorScheme.primary,
-          ),
-          const SizedBox(height: AppDimens.spacingXL),
+          const Icon(Icons.cloud_outlined, size: 56, color: AppColors.primary),
+          const SizedBox(height: 18),
+          Text('No backups yet', style: AppTypography.screenTitle.copyWith(fontSize: 20), textAlign: TextAlign.center),
+          const SizedBox(height: 10),
           Text(
-            'No Backups Yet',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            'Create your first backup to keep your health data safe. Backups are encrypted and stored securely.',
+            style: AppTypography.bodySecondary,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppDimens.spacingM),
-          Text(
-            'Create your first backup to keep your health data safe. '
-            'Backups are encrypted and stored securely.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppDimens.spacingXXL),
-          FilledButton.icon(
-            onPressed: onCreateBackup,
-            icon: const Icon(Icons.cloud_upload_outlined),
-            label: const Text('Create First Backup'),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimens.spacingXXL,
-                vertical: AppDimens.spacingL,
-              ),
-            ),
-          ),
+          const SizedBox(height: 26),
+          HkPrimaryButton(label: 'Create first backup', icon: Icons.cloud_upload_outlined, onPressed: onCreateBackup, expand: false),
         ],
       ),
     );
@@ -175,84 +129,103 @@ class _HasBackupsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppDimens.spacingXL,
-            AppDimens.spacingXL,
-            AppDimens.spacingXL,
-            AppDimens.spacingM,
-          ),
-          child: FilledButton.icon(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+          child: HkPrimaryButton(
+            label: 'Back up now',
+            icon: Icons.cloud_upload_outlined,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Creating backup...')),
+                const SnackBar(content: Text('Creating backup...'), behavior: SnackBarBehavior.floating),
               );
             },
-            icon: const Icon(Icons.cloud_upload_outlined),
-            label: const Text('Back Up Now'),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppDimens.spacingL,
-              ),
-            ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimens.spacingXL,
-            vertical: AppDimens.spacingS,
-          ),
-          child: Text(
-            'Previous Backups',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
+          child: Text('Previous backups', style: AppTypography.sectionTitle.copyWith(fontSize: 13)),
         ),
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.spacingL,
-            ),
+            padding: const EdgeInsets.fromLTRB(14, 8, 14, 24),
             itemCount: _mockBackups.length,
-            separatorBuilder: (_, __) =>
-                const SizedBox(height: AppDimens.spacingS),
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final backup = _mockBackups[index];
-              return Card(
-                child: ListTile(
-                  leading: Icon(
-                    backup.isLatest
-                        ? Icons.cloud_done_outlined
-                        : Icons.cloud_outlined,
-                    color: backup.isLatest
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                  ),
-                  title: Text(backup.date),
-                  subtitle: Text(backup.size),
-                  trailing: OutlinedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Restoring backup from ${backup.date}...'),
-                        ),
-                      );
-                    },
-                    child: const Text('Restore'),
-                  ),
-                ),
-              );
+              return _BackupRow(backup: backup);
             },
           ),
         ),
       ],
+    );
+  }
+}
+
+class _BackupRow extends StatelessWidget {
+  final _MockBackup backup;
+  const _BackupRow({required this.backup});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppDimens.radiusTile),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: backup.isLatest ? AppColors.primaryContainer : AppColors.surfaceMuted,
+              borderRadius: BorderRadius.circular(AppDimens.radiusChip),
+            ),
+            child: Icon(
+              backup.isLatest ? Icons.cloud_done_outlined : Icons.cloud_outlined,
+              size: 19,
+              color: backup.isLatest ? AppColors.primary : AppColors.textMuted5,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(backup.date, style: AppTypography.cardTitle.copyWith(fontSize: 12.5)),
+                const SizedBox(height: 2),
+                Text(backup.size, style: AppTypography.captionSmall),
+              ],
+            ),
+          ),
+          Material(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppDimens.radiusPill),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppDimens.radiusPill),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Restoring backup from ${backup.date}...'), behavior: SnackBarBehavior.floating),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.border),
+                  borderRadius: BorderRadius.circular(AppDimens.radiusPill),
+                ),
+                child: Text('Restore', style: AppTypography.chip.copyWith(color: AppColors.textMuted5)),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

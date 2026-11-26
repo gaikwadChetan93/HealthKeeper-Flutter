@@ -19,8 +19,12 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "9.0.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
+    // Bumped from 8.7.3: the camera plugin's androidx.camera 1.6.1 dependency
+    // requires AGP 8.9.1+ (checkDebugAarMetadata will fail below that). The
+    // project's Gradle wrapper is already 8.11.1, which satisfies AGP 8.9.x's
+    // own minimum Gradle requirement.
+    id("com.android.application") version "8.9.1" apply false
+    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
 }
 
 include(":app")

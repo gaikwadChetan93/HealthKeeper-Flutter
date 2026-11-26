@@ -4,6 +4,7 @@ import '../models/blood_glucose.dart';
 import '../models/blood_pressure.dart';
 import '../models/chart_models.dart';
 import '../models/doctor.dart';
+import '../models/document.dart';
 import '../models/exercise.dart';
 import '../models/family_member.dart';
 import '../models/heart_rate.dart';
@@ -97,7 +98,10 @@ class MockData {
 
   // ─── Blood Pressure ──────────────────────────────────────────
 
-  static List<BloodPressure> bloodPressureRecords(int memberId) => [
+  static List<BloodPressure> bloodPressureRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         BloodPressure(
           id: 1, familyMemberId: memberId, systolic: 120, diastolic: 80,
           measurementDate: _daysAgo(1), armSide: ArmSide.left,
@@ -129,10 +133,14 @@ class MockData {
           createdAt: _daysAgo(21), updatedAt: _daysAgo(21),
         ),
       ];
+  }
 
   // ─── Blood Glucose ───────────────────────────────────────────
 
-  static List<BloodGlucose> bloodGlucoseRecords(int memberId) => [
+  static List<BloodGlucose> bloodGlucoseRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         BloodGlucose(
           id: 1, familyMemberId: memberId, glucose: 95, unit: GlucoseUnit.mgDl,
           measurementDate: _daysAgo(1), mealContext: MealContext.fasting,
@@ -158,10 +166,14 @@ class MockData {
           createdAt: _daysAgo(10), updatedAt: _daysAgo(10),
         ),
       ];
+  }
 
   // ─── Heart Rate ──────────────────────────────────────────────
 
-  static List<HeartRate> heartRateRecords(int memberId) => [
+  static List<HeartRate> heartRateRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         HeartRate(
           id: 1, familyMemberId: memberId, bpm: 72,
           measurementDate: _daysAgo(1), activityContext: ActivityContext.resting,
@@ -181,10 +193,14 @@ class MockData {
           createdAt: _daysAgo(7), updatedAt: _daysAgo(7),
         ),
       ];
+  }
 
   // ─── Oxygen Saturation ───────────────────────────────────────
 
-  static List<OxygenSaturation> oxygenSaturationRecords(int memberId) => [
+  static List<OxygenSaturation> oxygenSaturationRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         OxygenSaturation(
           id: 1, familyMemberId: memberId, spO2: 98,
           measurementDate: _daysAgo(1), syncStatus: SyncStatus.synced,
@@ -201,10 +217,14 @@ class MockData {
           createdAt: _daysAgo(12), updatedAt: _daysAgo(12),
         ),
       ];
+  }
 
   // ─── Temperature ─────────────────────────────────────────────
 
-  static List<Temperature> temperatureRecords(int memberId) => [
+  static List<Temperature> temperatureRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Temperature(
           id: 1, familyMemberId: memberId, temperature: 98.6,
           unit: TemperatureUnit.fahrenheit, measurementDate: _daysAgo(2),
@@ -219,10 +239,14 @@ class MockData {
           createdAt: _daysAgo(10), updatedAt: _daysAgo(10),
         ),
       ];
+  }
 
   // ─── Weight ──────────────────────────────────────────────────
 
-  static List<Weight> weightRecords(int memberId) => [
+  static List<Weight> weightRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Weight(
           id: 1, familyMemberId: memberId, weight: 72.5,
           unit: WeightUnit.kilograms, measurementDate: _daysAgo(1),
@@ -242,10 +266,14 @@ class MockData {
           createdAt: _daysAgo(30), updatedAt: _daysAgo(30),
         ),
       ];
+  }
 
   // ─── Height ──────────────────────────────────────────────────
 
-  static List<Height> heightRecords(int memberId) => [
+  static List<Height> heightRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Height(
           id: 1, familyMemberId: memberId, height: 175,
           unit: HeightUnit.centimeters, measurementDate: _daysAgo(90),
@@ -253,10 +281,14 @@ class MockData {
           createdAt: _daysAgo(90), updatedAt: _daysAgo(90),
         ),
       ];
+  }
 
   // ─── Sleep ───────────────────────────────────────────────────
 
-  static List<SleepRecord> sleepRecords(int memberId) => [
+  static List<SleepRecord> sleepRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         SleepRecord(
           id: 1, familyMemberId: memberId, sleepDate: _daysAgo(1),
           hoursSlept: 7.5, quality: SleepQuality.good,
@@ -276,10 +308,14 @@ class MockData {
           createdAt: _daysAgo(3), updatedAt: _daysAgo(3),
         ),
       ];
+  }
 
   // ─── Exercise ────────────────────────────────────────────────
 
-  static List<Exercise> exerciseRecords(int memberId) => [
+  static List<Exercise> exerciseRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Exercise(
           id: 1, familyMemberId: memberId, exerciseDate: _daysAgo(1),
           activityType: ExerciseType.running, duration: 30,
@@ -301,10 +337,14 @@ class MockData {
           createdAt: _daysAgo(5), updatedAt: _daysAgo(5),
         ),
       ];
+  }
 
   // ─── Hydration ───────────────────────────────────────────────
 
-  static List<Hydration> hydrationRecords(int memberId) => [
+  static List<Hydration> hydrationRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Hydration(
           id: 1, familyMemberId: memberId, date: _daysAgo(0),
           waterIntake: 2500, unit: VolumeUnit.milliliters,
@@ -318,10 +358,14 @@ class MockData {
           createdAt: _daysAgo(1), updatedAt: _daysAgo(1),
         ),
       ];
+  }
 
   // ─── Medical Visits ──────────────────────────────────────────
 
-  static List<MedicalVisit> medicalVisitRecords(int memberId) => [
+  static List<MedicalVisit> medicalVisitRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         MedicalVisit(
           id: 1, familyMemberId: memberId, visitDate: _daysAgo(15),
           hospitalName: 'Apollo Hospital', doctorName: 'Dr. Anita Desai',
@@ -343,10 +387,14 @@ class MockData {
           createdAt: _daysAgo(60), updatedAt: _daysAgo(60),
         ),
       ];
+  }
 
   // ─── Appointments ────────────────────────────────────────────
 
-  static List<Appointment> appointmentRecords(int memberId) => [
+  static List<Appointment> appointmentRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Appointment(
           id: 1, familyMemberId: memberId,
           appointmentDate: _now.add(const Duration(days: 7)),
@@ -369,10 +417,14 @@ class MockData {
           createdAt: _daysAgo(1), updatedAt: _daysAgo(1),
         ),
       ];
+  }
 
   // ─── Prescriptions ──────────────────────────────────────────
 
-  static List<Prescription> prescriptionRecords(int memberId) => [
+  static List<Prescription> prescriptionRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Prescription(
           id: 1, familyMemberId: memberId,
           medicationName: 'Vitamin D3 60K',
@@ -396,10 +448,14 @@ class MockData {
           createdAt: _daysAgo(10), updatedAt: _daysAgo(3),
         ),
       ];
+  }
 
   // ─── Allergies ───────────────────────────────────────────────
 
-  static List<Allergy> allergyRecords(int memberId) => [
+  static List<Allergy> allergyRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Allergy(
           id: 1, familyMemberId: memberId, allergen: 'Peanuts',
           reactionType: AllergyType.food, severity: AllergySeverity.severe,
@@ -417,10 +473,53 @@ class MockData {
           createdAt: _daysAgo(200), updatedAt: _daysAgo(200),
         ),
       ];
+  }
+
+  // ─── Documents ───────────────────────────────────────────────
+  // Seed documents have no real scanned pages (pagePaths is empty — the
+  // library shows a placeholder thumbnail for these) since they were never
+  // actually captured on a device. Anything scanned for real during the
+  // session gets real pagePaths and shows the actual image.
+
+  static List<Document> documentRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
+        Document(
+          id: 1, familyMemberId: memberId,
+          title: 'Lipid profile — Aug 2026',
+          category: DocumentCategory.labReport,
+          ocrText: 'LDL cholesterol: 118 mg/dL\nHDL cholesterol: 52 mg/dL\nTriglycerides: 140 mg/dL',
+          scannedDate: _daysAgo(7),
+          syncStatus: SyncStatus.synced,
+          createdAt: _daysAgo(7), updatedAt: _daysAgo(7),
+        ),
+        Document(
+          id: 2, familyMemberId: memberId,
+          title: 'Amoxicillin prescription',
+          category: DocumentCategory.prescription,
+          ocrText: 'Amoxicillin 500mg\nTwice daily for 7 days\nDr. Vikram Mehta',
+          scannedDate: _daysAgo(40),
+          syncStatus: SyncStatus.synced,
+          createdAt: _daysAgo(40), updatedAt: _daysAgo(40),
+        ),
+        Document(
+          id: 3, familyMemberId: memberId,
+          title: 'Apollo Hospital — consultation bill',
+          category: DocumentCategory.bill,
+          scannedDate: _daysAgo(90),
+          syncStatus: SyncStatus.synced,
+          createdAt: _daysAgo(90), updatedAt: _daysAgo(90),
+        ),
+      ];
+  }
 
   // ─── Vaccines ────────────────────────────────────────────────
 
-  static List<Vaccine> vaccineRecords(int memberId) => [
+  static List<Vaccine> vaccineRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Vaccine(
           id: 1, familyMemberId: memberId, vaccineName: 'COVID-19 Booster',
           vaccineDate: _daysAgo(180), doseNumber: 3,
@@ -437,10 +536,14 @@ class MockData {
           createdAt: _daysAgo(60), updatedAt: _daysAgo(60),
         ),
       ];
+  }
 
   // ─── Medications ─────────────────────────────────────────────
 
-  static List<Medication> medicationRecords(int memberId) => [
+  static List<Medication> medicationRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Medication(
           id: 1, familyMemberId: memberId,
           medicationName: 'Multivitamin',
@@ -462,10 +565,14 @@ class MockData {
           createdAt: _daysAgo(30), updatedAt: _daysAgo(30),
         ),
       ];
+  }
 
   // ─── Lab Results ─────────────────────────────────────────────
 
-  static List<LabResult> labResultRecords(int memberId) => [
+  static List<LabResult> labResultRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         LabResult(
           id: 1, familyMemberId: memberId, testName: 'Complete Blood Count',
           testDate: _daysAgo(15), result: 'Normal',
@@ -492,10 +599,14 @@ class MockData {
           createdAt: _daysAgo(15), updatedAt: _daysAgo(15),
         ),
       ];
+  }
 
   // ─── Radiology Results ───────────────────────────────────────
 
-  static List<RadiologyResult> radiologyResultRecords(int memberId) => [
+  static List<RadiologyResult> radiologyResultRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         RadiologyResult(
           id: 1, familyMemberId: memberId, scanType: 'X-Ray',
           bodyPart: 'Chest', scanDate: _daysAgo(60),
@@ -506,10 +617,14 @@ class MockData {
           createdAt: _daysAgo(60), updatedAt: _daysAgo(60),
         ),
       ];
+  }
 
   // ─── Medical History ─────────────────────────────────────────
 
-  static List<MedicalHistory> medicalHistoryRecords(int memberId) => [
+  static List<MedicalHistory> medicalHistoryRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         MedicalHistory(
           id: 1, familyMemberId: memberId, condition: 'Seasonal Allergies',
           diagnosedDate: _daysAgo(730),
@@ -529,10 +644,14 @@ class MockData {
           createdAt: _daysAgo(1825), updatedAt: _daysAgo(1825),
         ),
       ];
+  }
 
   // ─── Surgeries ───────────────────────────────────────────────
 
-  static List<Surgery> surgeryRecords(int memberId) => [
+  static List<Surgery> surgeryRecords(int memberId) {
+    if (memberId != 1) return const [];
+
+    return [
         Surgery(
           id: 1, familyMemberId: memberId, surgeryName: 'Appendectomy',
           surgeryDate: _daysAgo(1825), hospital: 'AIIMS Delhi',
@@ -542,6 +661,7 @@ class MockData {
           createdAt: _daysAgo(1825), updatedAt: _daysAgo(1825),
         ),
       ];
+  }
 
   // ─── Chart Data Helpers ──────────────────────────────────────
 

@@ -6,6 +6,7 @@ import '../models/appointment.dart';
 import '../models/blood_glucose.dart';
 import '../models/blood_pressure.dart';
 import '../models/doctor.dart';
+import '../models/document.dart';
 import '../models/exercise.dart';
 import '../models/family_member.dart';
 import '../models/heart_rate.dart';
@@ -113,6 +114,14 @@ final hydrationProvider = StateNotifierProvider.family<
     HealthRecordState<Hydration>,
     int>((ref, memberId) => HealthRecordNotifier(
       mockDataLoader: MockData.hydrationRecords,
+      memberId: memberId,
+    ));
+
+final documentProvider = StateNotifierProvider.family<
+    HealthRecordNotifier<Document>,
+    HealthRecordState<Document>,
+    int>((ref, memberId) => HealthRecordNotifier(
+      mockDataLoader: MockData.documentRecords,
       memberId: memberId,
     ));
 

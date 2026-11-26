@@ -19,7 +19,10 @@ class FamilyMembersScreen extends ConsumerWidget {
     return Scaffold(
       body: Column(
         children: [
-          const StandardAppHeader(title: 'Family Members'),
+          StandardAppHeader(
+            title: 'Family Members',
+            onBack: () => context.pop(),
+          ),
           Expanded(
             child: members.isEmpty
                 ? EmptyStateWidget(

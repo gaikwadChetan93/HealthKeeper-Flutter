@@ -20,7 +20,10 @@ class MyDoctorsScreen extends ConsumerWidget {
     return Scaffold(
       body: Column(
         children: [
-          const StandardAppHeader(title: 'My Doctors'),
+          StandardAppHeader(
+            title: 'My Doctors',
+            onBack: () => context.pop(),
+          ),
           Expanded(
             child: doctors.isEmpty
                 ? EmptyStateWidget(

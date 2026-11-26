@@ -7,13 +7,23 @@ import '../../../app/theme/app_dimens.dart';
 import '../../../app/theme/vital_module_colors.dart';
 import '../../../core/config/module_registry.dart';
 import '../../../core/models/domain_config.dart';
+import '../../../core/state/active_person_provider.dart';
 import '../../../core/state/module_providers.dart';
 import '../../../core/widgets/colored_avatar.dart';
 import '../../../core/widgets/standard_app_header.dart';
 
 class HealthOverviewScreen extends ConsumerStatefulWidget {
-  final int memberId;
-  const HealthOverviewScreen({super.key, required this.memberId});
+  /// Deep-link target. When omitted, falls back to [activePersonProvider] —
+  /// this is the first screen migrated to the redesign's "active person is
+  /// app state, not a route parameter" model.
+  final int? memberId;
+
+  /// 0 = Quick Health, 1 = Vitals. Lets the Records/Vitals tabs reuse this
+  /// screen with a different starting segment until each gets its own
+  /// restyled screen in a later phase.
+  final int initialTab;
+
+  const HealthOverviewScreen({super.key, this.memberId, this.initialTab = 0});
 
   @override
   ConsumerState<HealthOverviewScreen> createState() =>
@@ -21,12 +31,14 @@ class HealthOverviewScreen extends ConsumerStatefulWidget {
 }
 
 class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
-  int _selectedTab = 0;
+  late int _selectedTab = widget.initialTab;
 
   @override
   Widget build(BuildContext context) {
     final members = ref.watch(familyMembersProvider);
-    final member = members.where((m) => m.id == widget.memberId).firstOrNull;
+    final int activeFallbackId = ref.watch(activePersonIdOrFallbackProvider);
+    final int resolvedId = widget.memberId ?? activeFallbackId;
+    final member = members.where((m) => m.id == resolvedId).firstOrNull;
     final theme = Theme.of(context);
 
     final quickHealthModules = ModuleRegistry.quickHealthModules;
@@ -37,7 +49,10 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
         children: [
           StandardAppHeader(
             title: 'Health Overview',
-            onBack: () => context.pop(),
+            // Only show a back arrow when this was reached via an explicit
+            // deep link (e.g. /health-overview/:memberId) — as the
+            // Records/Vitals tab root there's nothing to pop back to.
+            onBack: widget.memberId != null ? () => context.pop() : null,
           ),
 
           // Member info
@@ -103,7 +118,7 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
                 return _ModuleCard(
                   config: module,
                   onTap: () => context.push(
-                    Routes.healthList(module.domainKey, widget.memberId),
+                    Routes.healthList(module.domainKey, resolvedId),
                   ),
                 );
               },

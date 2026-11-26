@@ -6,15 +6,25 @@ import '../core/widgets/bottom_nav_shell.dart';
 import '../features/auth/screens/splash_screen.dart';
 import '../features/auth/screens/welcome_screen.dart';
 import '../features/auth/screens/sign_in_screen.dart';
+import '../features/documents/screens/document_detail_screen.dart';
+import '../features/documents/screens/documents_screen.dart';
+import '../features/documents/scanner/scanner_capture_screen.dart';
 import '../features/home/screens/family_members_screen.dart';
 import '../features/home/screens/add_family_member_screen.dart';
+import '../features/home/screens/home_tab_screen.dart';
+import '../features/home/screens/person_picker_screen.dart';
 import '../features/doctors/screens/my_doctors_screen.dart';
 import '../features/doctors/screens/add_doctor_screen.dart';
 import '../features/health_overview/screens/health_overview_screen.dart';
 import '../features/health_records/screens/generic_list_screen.dart';
 import '../features/health_records/screens/generic_form_screen.dart';
 import '../features/health_records/screens/generic_detail_screen.dart';
+import '../features/records/screens/records_screen.dart';
+import '../features/search/screens/search_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
+import '../features/vitals/screens/vital_detail_screen.dart';
+import '../features/vitals/screens/vital_entry_screen.dart';
+import '../features/vitals/screens/vitals_screen.dart';
 import '../features/privacy/screens/privacy_and_data_screen.dart';
 import '../features/privacy/screens/data_export_screen.dart';
 import '../features/privacy/screens/delete_account_screen.dart';
@@ -46,24 +56,55 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const SignInScreen(),
       ),
 
-      // Main app with bottom nav
+      // Main app with bottom nav: Home / Records / Vitals / Documents.
+      // Family, Doctors and Settings moved out of the shell — reachable
+      // from the Settings screen and the person picker instead.
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (_, __, child) => BottomNavShell(child: child),
         routes: [
           GoRoute(
             path: Routes.home,
-            builder: (_, __) => const FamilyMembersScreen(),
+            builder: (_, __) => const HomeTabScreen(),
           ),
           GoRoute(
-            path: Routes.doctors,
-            builder: (_, __) => const MyDoctorsScreen(),
+            path: Routes.records,
+            builder: (_, __) => const RecordsScreen(),
           ),
           GoRoute(
-            path: Routes.settings,
-            builder: (_, __) => const SettingsScreen(),
+            path: Routes.vitals,
+            builder: (_, __) => const VitalsScreen(),
+          ),
+          GoRoute(
+            path: Routes.documents,
+            builder: (_, __) => const DocumentsScreen(),
           ),
         ],
+      ),
+
+      // Person context
+      GoRoute(
+        path: Routes.personPicker,
+        builder: (_, __) => const PersonPickerScreen(),
+      ),
+      GoRoute(
+        path: Routes.search,
+        builder: (_, __) => const SearchScreen(),
+      ),
+
+      // Family list (moved out of the bottom nav — reachable from Settings
+      // and the person picker's "Manage family").
+      GoRoute(
+        path: Routes.family,
+        builder: (_, __) => const FamilyMembersScreen(),
+      ),
+      GoRoute(
+        path: Routes.doctors,
+        builder: (_, __) => const MyDoctorsScreen(),
+      ),
+      GoRoute(
+        path: Routes.settings,
+        builder: (_, __) => const SettingsScreen(),
       ),
 
       // Family member CRUD
@@ -126,6 +167,36 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => GenericDetailScreen(
           moduleKey: state.pathParameters['moduleKey']!,
           recordId: int.parse(state.pathParameters['recordId']!),
+        ),
+      ),
+
+      // Vital entry — numeric-keypad fast path, bypasses the generic form
+      GoRoute(
+        path: '/vitals/:moduleKey/:memberId/entry',
+        builder: (_, state) => VitalEntryScreen(
+          moduleKey: state.pathParameters['moduleKey']!,
+          memberId: int.parse(state.pathParameters['memberId']!),
+        ),
+      ),
+      GoRoute(
+        path: '/vitals/:moduleKey/:memberId/chart',
+        builder: (_, state) => VitalDetailScreen(
+          moduleKey: state.pathParameters['moduleKey']!,
+          memberId: int.parse(state.pathParameters['memberId']!),
+        ),
+      ),
+
+      // Documents & scanner
+      GoRoute(
+        path: '/documents/detail/:documentId',
+        builder: (_, state) => DocumentDetailScreen(
+          documentId: int.parse(state.pathParameters['documentId']!),
+        ),
+      ),
+      GoRoute(
+        path: '/scanner/:memberId/capture',
+        builder: (_, state) => ScannerCaptureScreen(
+          memberId: int.parse(state.pathParameters['memberId']!),
         ),
       ),
 

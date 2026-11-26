@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Health Keeper uses the camera to scan documents like prescriptions and lab reports. Scans are read on your device — nothing is uploaded.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Health Keeper's camera plugin requests microphone access, but the scanner never records audio.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

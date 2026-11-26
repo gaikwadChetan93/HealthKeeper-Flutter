@@ -19,7 +19,9 @@ android {
         applicationId = "com.example.health_keeper"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // The scanner feature's `camera` plugin (CameraX-backed) requires API 24+,
+        // which is higher than Flutter's own default minSdkVersion.
+        minSdk = maxOf(flutter.minSdkVersion, 24)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -35,9 +37,7 @@ android {
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
-    }
+    jvmToolchain(17)
 }
 
 flutter {

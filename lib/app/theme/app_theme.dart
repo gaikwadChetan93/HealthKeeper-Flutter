@@ -32,59 +32,66 @@ class AppTheme {
       colorScheme: colorScheme,
       brightness: brightness,
       textTheme: textTheme,
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor:
+          brightness == Brightness.light ? AppColors.background : colorScheme.surface,
       appBarTheme: AppBarTheme(
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        titleTextStyle: textTheme.headlineMedium?.copyWith(
-          color: colorScheme.onPrimary,
-          fontWeight: FontWeight.bold,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: colorScheme.onSurface,
+        titleTextStyle: textTheme.titleMedium?.copyWith(
+          color: colorScheme.onSurface,
         ),
       ),
       cardTheme: CardThemeData(
-        elevation: AppDimens.elevationS,
+        elevation: 0,
+        color: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusM),
+          borderRadius: BorderRadius.circular(AppDimens.radiusCardM),
+          side: BorderSide(color: colorScheme.outline),
         ),
         clipBehavior: Clip.antiAlias,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          elevation: AppDimens.elevationS,
+          elevation: 0,
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimens.spacingXL,
             vertical: AppDimens.spacingM,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppDimens.radiusS),
+            borderRadius: BorderRadius.circular(AppDimens.radiusTileS),
           ),
-          textStyle: textTheme.labelLarge,
+          textStyle: AppTypography.button,
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimens.spacingXL,
             vertical: AppDimens.spacingM,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppDimens.radiusS),
+            borderRadius: BorderRadius.circular(AppDimens.radiusTileS),
           ),
-          textStyle: textTheme.labelLarge,
+          textStyle: AppTypography.button,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
+          side: BorderSide(color: colorScheme.outline),
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimens.spacingXL,
             vertical: AppDimens.spacingM,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppDimens.radiusS),
+            borderRadius: BorderRadius.circular(AppDimens.radiusTileS),
           ),
-          textStyle: textTheme.labelLarge,
+          textStyle: AppTypography.button,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -115,20 +122,21 @@ class AppTheme {
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        elevation: AppDimens.elevationM,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusL),
+          borderRadius: BorderRadius.circular(AppDimens.radiusChip + 4),
         ),
       ),
       dialogTheme: DialogThemeData(
+        backgroundColor: colorScheme.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusL),
+          borderRadius: BorderRadius.circular(AppDimens.radiusCardM),
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppDimens.radiusL),
+            top: Radius.circular(30),
           ),
         ),
         showDragHandle: true,
@@ -136,13 +144,18 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
+        backgroundColor: colorScheme.inverseSurface,
+        contentTextStyle: AppTypography.chip.copyWith(color: colorScheme.onInverseSurface),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusS),
+          borderRadius: BorderRadius.circular(AppDimens.radiusTile),
         ),
       ),
       chipTheme: ChipThemeData(
+        backgroundColor: AppColors.surfaceMuted,
+        labelStyle: AppTypography.chip.copyWith(color: AppColors.textMuted5),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusS),
+          borderRadius: BorderRadius.circular(AppDimens.radiusPill),
+          side: BorderSide(color: colorScheme.outline),
         ),
       ),
       dividerTheme: DividerThemeData(

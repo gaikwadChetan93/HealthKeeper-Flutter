@@ -17,13 +17,30 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          const StandardAppHeader(title: 'Settings'),
+          StandardAppHeader(
+            title: 'Settings',
+            onBack: () => context.pop(),
+          ),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(
                 vertical: AppDimens.spacingL,
               ),
               children: [
+                SettingsItem(
+                  icon: Icons.group_outlined,
+                  title: 'Family',
+                  subtitle: 'Manage the people you look after',
+                  onTap: () => context.push(Routes.family),
+                ),
+                const Divider(height: 1, indent: 76),
+                SettingsItem(
+                  icon: Icons.medical_services_outlined,
+                  title: 'Doctors',
+                  subtitle: 'Shared across the whole family',
+                  onTap: () => context.push(Routes.doctors),
+                ),
+                const Divider(height: 1, indent: 76),
                 SettingsItem(
                   icon: Icons.shield_outlined,
                   title: 'Privacy & Data',
