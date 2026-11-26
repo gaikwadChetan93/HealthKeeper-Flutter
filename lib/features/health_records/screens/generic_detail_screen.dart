@@ -155,6 +155,15 @@ class _RecordDetails extends StatelessWidget {
                 TimelineItem(
                     label: f.label,
                     value: RecordFormat.display(f, record.payload[f.key])),
+              if (record.doctorId != null)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () => context.push(Routes.doctorDetail(record.doctorId!)),
+                    icon: const Icon(Icons.medical_services_outlined, size: 18),
+                    label: const Text('Open doctor'),
+                  ),
+                ),
               const SizedBox(height: AppDimens.spacingL),
               const Divider(),
               const SizedBox(height: AppDimens.spacingS),

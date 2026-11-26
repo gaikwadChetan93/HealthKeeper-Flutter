@@ -107,7 +107,7 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
                     // columns so names like "Appointment" fit on one line.
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: textScale > 1.15 ? 2 : 3,
-                      mainAxisExtent: 76 + 42 * textScale,
+                      mainAxisExtent: 86 + 46 * textScale,
                       crossAxisSpacing: AppDimens.spacingM,
                       mainAxisSpacing: AppDimens.spacingM,
                     ),

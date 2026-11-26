@@ -44,4 +44,11 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+    <!-- Calling a saved doctor opens the phone's dialler. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+    </queries>
 </manifest>

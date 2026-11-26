@@ -1,39 +1,64 @@
+/// A doctor the family sees, from /v1/doctors. Shared by every family member.
 class Doctor {
-  final int id;
+  final String id;
   final String name;
-  final String speciality;
-  final String contactNumber;
-  final String? avatarPath;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String? speciality;
+  final String? phone;
+  final String? clinic;
+  final String? notes;
+
+  /// How many records are linked to this doctor, and the latest one's date.
+  final int recordCount;
+  final DateTime? lastRecordDate;
+  final int version;
 
   const Doctor({
-    this.id = 0,
+    required this.id,
     required this.name,
-    required this.speciality,
-    required this.contactNumber,
-    this.avatarPath,
-    required this.createdAt,
-    required this.updatedAt,
+    this.speciality,
+    this.phone,
+    this.clinic,
+    this.notes,
+    this.recordCount = 0,
+    this.lastRecordDate,
+    required this.version,
   });
 
-  Doctor copyWith({
-    int? id,
-    String? name,
-    String? speciality,
-    String? contactNumber,
-    String? avatarPath,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return Doctor(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      speciality: speciality ?? this.speciality,
-      contactNumber: contactNumber ?? this.contactNumber,
-      avatarPath: avatarPath ?? this.avatarPath,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
+  /// "Cardiologist · City Clinic"
+  String get subtitle => [speciality, clinic].whereType<String>().join(' · ');
+
+  factory Doctor.fromJson(Map<String, dynamic> j) => Doctor(
+        id: j['id'] as String,
+        name: j['name'] as String,
+        speciality: j['speciality'] as String?,
+        phone: j['phone'] as String?,
+        clinic: j['clinic'] as String?,
+        notes: j['notes'] as String?,
+        recordCount: j['record_count'] as int? ?? 0,
+        lastRecordDate: j['last_record_date'] == null
+            ? null
+            : DateTime.parse(j['last_record_date'] as String).toLocal(),
+        version: j['version'] as int,
+      );
+
+  static const specialities = [
+    'General Physician',
+    'Cardiologist',
+    'Dermatologist',
+    'Diabetologist',
+    'Endocrinologist',
+    'ENT Specialist',
+    'Gastroenterologist',
+    'Gynecologist',
+    'Nephrologist',
+    'Neurologist',
+    'Oncologist',
+    'Ophthalmologist',
+    'Orthopedic',
+    'Pediatrician',
+    'Psychiatrist',
+    'Pulmonologist',
+    'Urologist',
+    'Dentist',
+  ];
 }

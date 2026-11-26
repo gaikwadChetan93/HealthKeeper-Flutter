@@ -3,72 +3,58 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/route_constants.dart';
-import '../../../app/theme/app_dimens.dart';
-import '../../../core/mock/mock_data.dart';
-import '../../../core/models/doctor.dart';
+import '../../../core/state/doctor_providers.dart';
 import '../../../core/widgets/animated_fab.dart';
-import '../../../core/widgets/doctor_card.dart';
 import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/load_error_view.dart';
+import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/standard_app_header.dart';
+import '../widgets/doctor_card.dart';
 
-/// Doctors arrive in a later release; until then this shows sample data.
-final doctorsProvider = StateProvider<List<Doctor>>((ref) => MockData.doctors);
-
+/// The family's doctors. Shared by every family member.
 class MyDoctorsScreen extends ConsumerWidget {
   const MyDoctorsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final doctors = ref.watch(doctorsProvider);
-
     return Scaffold(
-      body: Column(
-        children: [
-          const StandardAppHeader(title: 'My Doctors'),
-          Expanded(
-            child: doctors.isEmpty
+      body: Column(children: [
+        const StandardAppHeader(title: 'My Doctors'),
+        Expanded(
+          child: doctors.when(
+            skipLoadingOnReload: true,
+            loading: () => const ShimmerLoading(),
+            error: (e, _) => LoadErrorView(
+                error: e, onRetry: () => ref.invalidate(doctorsProvider)),
+            data: (list) => list.isEmpty
                 ? EmptyStateWidget(
                     icon: Icons.medical_services_outlined,
                     title: 'No Doctors Added Yet',
-                    description: 'Add your first doctor to keep track.',
+                    description:
+                        'Add your family’s doctors to call them quickly and see every visit, '
+                        'prescription and appointment with them.',
                     ctaLabel: 'Add Doctor',
                     onCta: () => context.push(Routes.addDoctor),
                   )
-                : GridView.builder(
-                    padding: const EdgeInsets.all(AppDimens.spacingL),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.85,
-                      crossAxisSpacing: AppDimens.spacingM,
-                      mainAxisSpacing: AppDimens.spacingM,
-                    ),
-                    itemCount: doctors.length,
-                    itemBuilder: (_, i) {
-                      final d = doctors[i];
-                      return DoctorCard(
-                        name: d.name,
-                        speciality: d.speciality,
-                        contactNumber: d.contactNumber,
+                : RefreshIndicator(
+                    onRefresh: () => ref.refresh(doctorsProvider.future),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(top: 8, bottom: 96),
+                      itemCount: list.length,
+                      itemBuilder: (_, i) => DoctorCard(
+                        doctor: list[i],
                         colorIndex: i,
-                        onEdit: () => context.push(Routes.editDoctor(d.id)),
-                        onCall: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Calling ${d.contactNumber}...'),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        },
-                      );
-                    },
+                        onTap: () =>
+                            context.push(Routes.doctorDetail(list[i].id)),
+                      ),
+                    ),
                   ),
           ),
-        ],
-      ),
-      floatingActionButton: AnimatedFab(
-        onPressed: () => context.push(Routes.addDoctor),
-      ),
+        ),
+      ]),
+      floatingActionButton:
+          AnimatedFab(onPressed: () => context.push(Routes.addDoctor)),
     );
   }
 }

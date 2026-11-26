@@ -16,7 +16,8 @@ class Routes {
 
   // Doctor
   static const addDoctor = '/doctor/add';
-  static String editDoctor(int id) => '/doctor/edit/$id';
+  static String editDoctor(String id) => '/doctor/edit/$id';
+  static String doctorDetail(String id) => '/doctor/view/$id';
 
   // Health overview
   static String healthOverview(String memberId) => '/health-overview/$memberId';
