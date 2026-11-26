@@ -4,13 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Health Keeper is a Flutter health-tracking app for families, migrated from an Android (Jetpack Compose) app. It is **UI-only** — all data comes from mock/dummy data in `lib/core/mock/mock_data.dart`. No networking, databases, auth logic, or business logic.
+Health Keeper is a Flutter health-tracking app for families. It is a **thin online client** of the Health Keeper API (Python/FastAPI, repo `healthkeeper-backend`): sign-in, family members and all health records are read from and saved to the API. No health data is stored on the device; only the refresh token is kept, in the platform keystore (`flutter_secure_storage`). Doctors are still sample data (`lib/core/mock/mock_data.dart`) until a later release.
 
 ## Build & Run Commands
 
 ```bash
 flutter pub get            # Install dependencies
-flutter run                # Run debug
+flutter run                # Run debug (talks to http://10.0.2.2:8000 on the Android emulator)
+flutter run --dart-define=API_BASE_URL=https://api.example.com   # Point at another API
 flutter run -d <device>    # Run on specific device
 flutter build apk --release   # Android release
 flutter build ios --release    # iOS release
@@ -30,18 +31,22 @@ The app manages 20 health modules (Blood Pressure, Appointments, Allergies, etc.
 - `lib/features/health_records/screens/generic_list_screen.dart` — Shared list screen for all modules
 - `lib/features/health_records/screens/generic_form_screen.dart` — Shared form screen with dynamic field rendering
 - `lib/features/health_records/screens/generic_detail_screen.dart` — Shared detail screen
-- `lib/features/health_records/config/module_screen_config.dart` — Maps moduleKey → title/subtitle/date lambdas for all 20 models
+- `lib/core/records/record_format.dart` — Converts form values ↔ API payload, and builds list titles/subtitles and detail text per module
 
-**To add a new health module:** Add a `DomainConfig` subclass in `module_registry.dart`, create a model in `core/models/`, add mock data, add a provider in `module_providers.dart`, and add a `ScreenConfig` entry in `module_screen_config.dart`. No new screens needed.
+Records are generic: `RecordItem` holds the module key and a `payload` map keyed by the module's field keys. The backend validates payloads against the same field definitions (generated from `module_registry.dart` by the backend's `scripts/extract_modules.py`).
 
-### State Management — Riverpod
-- `lib/core/state/health_record_notifier.dart` — Generic `StateNotifier<HealthRecordState<T>>` for all modules
-- `lib/core/state/module_providers.dart` — All 20 module providers (family-parameterized by memberId)
-- `lib/core/state/form_state_notifier.dart` — Form data + validation state
+**To add a new health module:** Add a `DomainConfig` subclass in `module_registry.dart`, regenerate the backend's `definitions.json`, and add title/subtitle cases in `record_format.dart`. No new screens or models needed.
+
+### API, sign-in and state — Riverpod
+- `lib/core/api/api_client.dart` — HTTP client: bearer token, automatic refresh on 401, `ApiException` from the API's error envelope, `If-Match` on updates, `Idempotency-Key` on creates
+- `lib/core/api/api_config.dart` — API base URL (`--dart-define=API_BASE_URL`; debug defaults to the local backend)
+- `lib/core/auth/auth_controller.dart` — Sign-in state (`starting` / `signedOut` / `signedIn` + `/v1/me`), dev sign-in (debug builds, local backend only), consents, sign-out
+- `lib/core/state/api_providers.dart` — `membersProvider`, `recordsProvider((memberId, module, query))` with paging, `recordProvider(id)`, `summaryProvider(memberId)`, `recordActionsProvider` (create/update/delete + refresh)
+- `lib/core/state/form_state_notifier.dart` — Form data + validation state (server field errors via `setErrors`)
 - State pattern: `AsyncValue<List<T>>` → `.when(loading: ..., error: ..., data: ...)`, empty = data with empty list
 
 ### Navigation — GoRouter
-- `lib/app/router.dart` — Full route definitions
+- `lib/app/router.dart` — Full route definitions; `authRedirect` sends people to splash → welcome/sign-in → consent → create profile → app. There is no guest mode.
 - `lib/app/route_constants.dart` — Type-safe route helpers
 - Parameterized routes: `/health/:moduleKey/:memberId` serves all 20 modules with one route definition
 - ShellRoute for bottom nav (Family Members, Doctors, Settings)
@@ -56,4 +61,6 @@ The app manages 20 health modules (Blood Pressure, Appointments, Allergies, etc.
 - Widgets must stay under 250 lines — extract sub-widgets
 - All models use `const` constructors, no Freezed
 - Half-width field pairing logic in `GenericFormScreen` — consecutive `LayoutWidth.half` fields render side-by-side in a Row
-- Module categories: `quickHealth` (9 record modules) and `vitalOverview` (11 vital modules)
+- Module categories: `quickHealth` (record modules) and `vitalOverview` (vital modules). `lab_result` is shown as "Soon" until lab values and report upload are built.
+- IDs from the API are UUID strings (members, records).
+- Family members must be 18+ for now; adding someone other than yourself needs the attestation checkbox.

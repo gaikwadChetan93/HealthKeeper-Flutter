@@ -7,10 +7,14 @@ class HealthZoneBadge extends StatelessWidget {
   final VitalHealthZones zones;
   final double value;
 
+  /// Smaller, for cards.
+  final bool compact;
+
   const HealthZoneBadge({
     super.key,
     required this.zones,
     required this.value,
+    this.compact = false,
   });
 
   @override
@@ -18,9 +22,9 @@ class HealthZoneBadge extends StatelessWidget {
     final zone = zones.getZoneForValue(value);
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimens.spacingM,
-        vertical: AppDimens.spacingXS,
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? AppDimens.spacingS : AppDimens.spacingM,
+        vertical: compact ? 1 : AppDimens.spacingXS,
       ),
       decoration: BoxDecoration(
         color: zone.color.withValues(alpha: 0.15),
@@ -33,14 +37,15 @@ class HealthZoneBadge extends StatelessWidget {
           Container(
             width: 8,
             height: 8,
-            decoration: BoxDecoration(color: zone.color, shape: BoxShape.circle),
+            decoration:
+                BoxDecoration(color: zone.color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
           Text(
             zone.label,
             style: TextStyle(
               color: zone.color,
-              fontSize: 12,
+              fontSize: compact ? 10 : 12,
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -7,12 +7,15 @@ import '../../../app/theme/app_dimens.dart';
 import '../../../app/theme/vital_module_colors.dart';
 import '../../../core/config/module_registry.dart';
 import '../../../core/models/domain_config.dart';
-import '../../../core/state/module_providers.dart';
+import '../../../core/state/api_providers.dart';
+import '../../../core/state/lab_providers.dart';
+import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/colored_avatar.dart';
 import '../../../core/widgets/standard_app_header.dart';
+import '../../vitals/widgets/vitals_dashboard.dart';
 
 class HealthOverviewScreen extends ConsumerStatefulWidget {
-  final int memberId;
+  final String memberId;
   const HealthOverviewScreen({super.key, required this.memberId});
 
   @override
@@ -25,12 +28,14 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final members = ref.watch(familyMembersProvider);
-    final member = members.where((m) => m.id == widget.memberId).firstOrNull;
+    final member = ref.watch(memberProvider(widget.memberId));
+    final counts =
+        ref.watch(summaryProvider(widget.memberId)).valueOrNull ?? const {};
+    final labReports =
+        ref.watch(labReportsProvider(widget.memberId)).valueOrNull?.length;
     final theme = Theme.of(context);
 
     final quickHealthModules = ModuleRegistry.quickHealthModules;
-    final vitalModules = ModuleRegistry.vitalOverviewModules;
 
     return Scaffold(
       body: Column(
@@ -58,7 +63,7 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
                         ),
                       ),
                       Text(
-                        '${member.relation} • ${member.age} yrs',
+                        '${member.isSelf ? 'You' : member.relationLabel} • ${member.age} yrs',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -74,8 +79,14 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
             padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingL),
             child: SegmentedButton<int>(
               segments: const [
-                ButtonSegment(value: 0, label: Text('Quick Health'), icon: Icon(Icons.grid_view, size: 18)),
-                ButtonSegment(value: 1, label: Text('Vitals'), icon: Icon(Icons.show_chart, size: 18)),
+                ButtonSegment(
+                    value: 0,
+                    label: Text('Quick Health'),
+                    icon: Icon(Icons.grid_view, size: 18)),
+                ButtonSegment(
+                    value: 1,
+                    label: Text('Vitals'),
+                    icon: Icon(Icons.show_chart, size: 18)),
               ],
               selected: {_selectedTab},
               onSelectionChanged: (v) => setState(() => _selectedTab = v.first),
@@ -85,29 +96,35 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
 
           const SizedBox(height: AppDimens.spacingM),
 
-          // Module grid
+          // Vitals: dashboard with latest values and trends. Records: module grid.
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(AppDimens.spacingL),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 0.95,
-                crossAxisSpacing: AppDimens.spacingM,
-                mainAxisSpacing: AppDimens.spacingM,
-              ),
-              itemCount: _selectedTab == 0 ? quickHealthModules.length : vitalModules.length,
-              itemBuilder: (_, i) {
-                final module = _selectedTab == 0
-                    ? quickHealthModules[i]
-                    : vitalModules[i];
-                return _ModuleCard(
-                  config: module,
-                  onTap: () => context.push(
-                    Routes.healthList(module.domainKey, widget.memberId),
+            child: _selectedTab == 1
+                ? VitalsDashboard(memberId: widget.memberId)
+                : GridView.builder(
+                    padding: const EdgeInsets.all(AppDimens.spacingL),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.82,
+                      crossAxisSpacing: AppDimens.spacingM,
+                      mainAxisSpacing: AppDimens.spacingM,
+                    ),
+                    itemCount: quickHealthModules.length,
+                    itemBuilder: (_, i) {
+                      final module = quickHealthModules[i];
+                      final isLabs = module.domainKey == 'lab_result';
+                      return _ModuleCard(
+                        config: module,
+                        count:
+                            isLabs ? labReports : counts[module.domainKey] ?? 0,
+                        countLabel: isLabs ? 'report' : 'record',
+                        onTap: () => context.push(isLabs
+                            ? Routes.labs(widget.memberId)
+                            : Routes.healthList(
+                                module.domainKey, widget.memberId)),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
@@ -119,7 +136,17 @@ class _ModuleCard extends StatefulWidget {
   final DomainConfig config;
   final VoidCallback onTap;
 
-  const _ModuleCard({required this.config, required this.onTap});
+  /// Records saved in this module; null while it is loading.
+  final int? count;
+
+  /// What is being counted: "record", or "report" for lab results.
+  final String countLabel;
+
+  const _ModuleCard(
+      {required this.config,
+      required this.onTap,
+      this.count,
+      this.countLabel = 'record'});
 
   @override
   State<_ModuleCard> createState() => _ModuleCardState();
@@ -170,6 +197,17 @@ class _ModuleCardState extends State<_ModuleCard> {
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  widget.count == null
+                      ? ''
+                      : widget.count == 0
+                          ? 'No ${widget.countLabel}s'
+                          : '${widget.count} ${widget.countLabel}${widget.count == 1 ? '' : 's'}',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ),

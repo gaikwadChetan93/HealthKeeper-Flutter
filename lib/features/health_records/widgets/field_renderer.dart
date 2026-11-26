@@ -70,6 +70,8 @@ class FieldRenderer extends StatelessWidget {
           onChanged: (v) => onChanged(v),
         ),
       TimeFieldDescriptor d => AppTextField(
+          // Read-only and filled by the picker, so rebuild when the value changes.
+          key: ValueKey(value),
           label: d.label,
           value: value as String?,
           errorText: error,
@@ -79,10 +81,11 @@ class FieldRenderer extends StatelessWidget {
           onTap: () async {
             final time = await showTimePicker(
               context: context,
-              initialTime: TimeOfDay.now(),
+              initialTime: _parseTime(value as String?) ?? TimeOfDay.now(),
             );
             if (time != null && context.mounted) {
-              onChanged(time.format(context));
+              onChanged('${time.hour.toString().padLeft(2, '0')}:'
+                  '${time.minute.toString().padLeft(2, '0')}');
             }
           },
           onChanged: (v) => onChanged(v),
@@ -124,6 +127,13 @@ class FieldRenderer extends StatelessWidget {
   }
 }
 
+TimeOfDay? _parseTime(String? hhmm) {
+  final parts = hhmm?.split(':');
+  if (parts == null || parts.length != 2) return null;
+  final h = int.tryParse(parts[0]), m = int.tryParse(parts[1]);
+  return h == null || m == null ? null : TimeOfDay(hour: h, minute: m);
+}
+
 class _FilePlaceholder extends StatelessWidget {
   final String label;
   const _FilePlaceholder({required this.label});
@@ -135,7 +145,7 @@ class _FilePlaceholder extends StatelessWidget {
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('File upload will be available after API integration'),
+            content: Text('Attachments arrive in a later update'),
             behavior: SnackBarBehavior.floating,
           ),
         );

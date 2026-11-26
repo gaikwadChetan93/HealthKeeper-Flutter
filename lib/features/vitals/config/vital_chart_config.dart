@@ -12,6 +12,11 @@ class VitalChartConfig {
   final VitalHealthZones? secondaryHealthZones;
   final bool isDualChart;
 
+  /// Zones for a metric: the first metric uses [healthZones], the second
+  /// (diastolic) [secondaryHealthZones].
+  VitalHealthZones? zonesFor(int metricIndex) =>
+      metricIndex == 0 ? healthZones : secondaryHealthZones;
+
   const VitalChartConfig({
     required this.title,
     required this.unit,
@@ -73,6 +78,7 @@ class VitalChartConfig {
     unit: 'cm',
     trendLabel: 'Height Trend',
     decimalPlaces: 1,
+    emptyStateMessage: 'Start tracking your height to see trends',
   );
 
   static const temperature = VitalChartConfig(
@@ -80,6 +86,32 @@ class VitalChartConfig {
     unit: '°F',
     trendLabel: 'Temperature Trend',
     decimalPlaces: 1,
+    emptyStateMessage: 'Start tracking your temperature to see trends',
+  );
+
+  static const sleep = VitalChartConfig(
+    title: 'Sleep',
+    unit: 'hrs',
+    trendLabel: 'Sleep Trend',
+    chartType: ChartType.bar,
+    decimalPlaces: 1,
+    emptyStateMessage: 'Start tracking your sleep to see trends',
+  );
+
+  static const exercise = VitalChartConfig(
+    title: 'Exercise',
+    unit: 'min',
+    trendLabel: 'Exercise per day',
+    chartType: ChartType.bar,
+    emptyStateMessage: 'Start tracking your exercise to see trends',
+  );
+
+  static const hydration = VitalChartConfig(
+    title: 'Hydration',
+    unit: 'ml',
+    trendLabel: 'Water per day',
+    chartType: ChartType.bar,
+    emptyStateMessage: 'Start tracking how much water you drink to see trends',
   );
 
   static VitalChartConfig? getConfig(String vitalKey) {
@@ -91,6 +123,9 @@ class VitalChartConfig {
       'weight' => weight,
       'height' => height,
       'temperature' => temperature,
+      'sleep' => sleep,
+      'exercise' => exercise,
+      'hydration' => hydration,
       _ => null,
     };
   }

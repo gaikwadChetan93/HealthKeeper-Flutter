@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,41 +7,56 @@ import 'package:go_router/go_router.dart';
 import '../../../app/route_constants.dart';
 import '../../../app/theme/app_dimens.dart';
 import '../../../core/config/module_registry.dart';
-import '../../../core/models/health_record.dart';
+import '../../../core/records/record_format.dart';
+import '../../../core/state/api_providers.dart';
 import '../../../core/widgets/animated_fab.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../../core/widgets/generic_record_card.dart';
+import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/standard_app_header.dart';
-import '../config/module_screen_config.dart';
+import '../../vitals/config/vital_chart_config.dart';
 
 class GenericListScreen extends ConsumerStatefulWidget {
   final String moduleKey;
-  final int memberId;
+  final String memberId;
 
-  const GenericListScreen({
-    super.key,
-    required this.moduleKey,
-    required this.memberId,
-  });
+  const GenericListScreen(
+      {super.key, required this.moduleKey, required this.memberId});
 
   @override
   ConsumerState<GenericListScreen> createState() => _GenericListScreenState();
 }
 
 class _GenericListScreenState extends ConsumerState<GenericListScreen> {
-  String _searchQuery = '';
+  String _query = '';
+  Timer? _debounce;
+
+  RecordsKey get _key =>
+      (memberId: widget.memberId, module: widget.moduleKey, query: _query);
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  /// Search runs on the server, a moment after typing stops.
+  void _onSearch(String v) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 350), () {
+      if (mounted) setState(() => _query = v.trim());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final config = ModuleRegistry.getModuleByKey(widget.moduleKey);
     if (config == null) {
-      return Scaffold(body: Center(child: Text('Unknown module: ${widget.moduleKey}')));
+      return Scaffold(
+          body: Center(child: Text('Unknown module: ${widget.moduleKey}')));
     }
-
-    final screenConfig = ModuleScreenConfig.getConfig(widget.moduleKey);
-    final provider = screenConfig.getProvider(widget.memberId);
-    final state = ref.watch(provider);
+    final records = ref.watch(recordsProvider(_key));
 
     return Scaffold(
       body: Column(
@@ -47,8 +64,16 @@ class _GenericListScreenState extends ConsumerState<GenericListScreen> {
           StandardAppHeader(
             title: config.domainName,
             onBack: () => context.pop(),
+            actions: [
+              if (VitalChartConfig.getConfig(widget.moduleKey) != null)
+                IconButton(
+                  tooltip: 'Trends',
+                  icon: const Icon(Icons.show_chart, color: Colors.white),
+                  onPressed: () => context.push(
+                      Routes.vitalChart(widget.moduleKey, widget.memberId)),
+                ),
+            ],
           ),
-          // Search bar
           Padding(
             padding: const EdgeInsets.all(AppDimens.spacingL),
             child: TextField(
@@ -60,44 +85,55 @@ class _GenericListScreenState extends ConsumerState<GenericListScreen> {
                   vertical: AppDimens.spacingS,
                 ),
               ),
-              onChanged: (v) => setState(() => _searchQuery = v),
+              onChanged: _onSearch,
             ),
           ),
-          // Records list
           Expanded(
-            child: state.records.when(
+            child: records.when(
+              skipLoadingOnReload: true,
               loading: () => const ShimmerLoading(),
-              error: (e, _) => Center(child: Text('Error: $e')),
-              data: (records) {
-                final filtered = _filterRecords(records, screenConfig);
-                if (filtered.isEmpty) {
-                  return EmptyStateWidget(
-                    icon: config.icon,
-                    title: config.emptyStateTitle,
-                    description: config.emptyStateDescription,
-                    ctaLabel: config.emptyStateCTA,
-                    onCta: () => context.push(
-                      Routes.healthAdd(widget.moduleKey, widget.memberId),
-                    ),
-                  );
+              error: (e, _) => LoadErrorView(
+                  error: e,
+                  onRetry: () => ref.invalidate(recordsProvider(_key))),
+              data: (page) {
+                if (page.items.isEmpty) {
+                  return _query.isNotEmpty
+                      ? Center(child: Text('Nothing matches “$_query”'))
+                      : EmptyStateWidget(
+                          icon: config.icon,
+                          title: config.emptyStateTitle,
+                          description: config.emptyStateDescription,
+                          ctaLabel: config.emptyStateCTA,
+                          onCta: () => context.push(Routes.healthAdd(
+                              widget.moduleKey, widget.memberId)),
+                        );
                 }
-                return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 80),
-                  itemCount: filtered.length,
-                  itemBuilder: (_, i) {
-                    final record = filtered[i];
-                    return GenericRecordCard(
-                      title: screenConfig.getTitle(record),
-                      subtitle: screenConfig.getSubtitle(record),
-                      date: screenConfig.getDate(record),
-                      icon: config.icon,
-                      moduleKey: widget.moduleKey,
-                      syncStatus: record.syncStatus,
-                      onTap: () => context.push(
-                        Routes.healthDetail(widget.moduleKey, record.id),
-                      ),
-                    );
-                  },
+                final more = page.nextCursor != null;
+                return RefreshIndicator(
+                  onRefresh: () => ref.refresh(recordsProvider(_key).future),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 80),
+                    itemCount: page.items.length + (more ? 1 : 0),
+                    itemBuilder: (_, i) {
+                      if (i == page.items.length) {
+                        ref.read(recordsProvider(_key).notifier).loadMore();
+                        return const Padding(
+                          padding: EdgeInsets.all(AppDimens.spacingL),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      final r = page.items[i];
+                      return GenericRecordCard(
+                        title: RecordFormat.title(config, r),
+                        subtitle: RecordFormat.subtitle(config, r),
+                        date: r.recordDate,
+                        icon: config.icon,
+                        moduleKey: widget.moduleKey,
+                        onTap: () => context
+                            .push(Routes.healthDetail(widget.moduleKey, r.id)),
+                      );
+                    },
+                  ),
                 );
               },
             ),
@@ -105,22 +141,9 @@ class _GenericListScreenState extends ConsumerState<GenericListScreen> {
         ],
       ),
       floatingActionButton: AnimatedFab(
-        onPressed: () => context.push(
-          Routes.healthAdd(widget.moduleKey, widget.memberId),
-        ),
+        onPressed: () =>
+            context.push(Routes.healthAdd(widget.moduleKey, widget.memberId)),
       ),
     );
-  }
-
-  List<HealthRecord> _filterRecords(
-    List<HealthRecord> records,
-    ScreenConfig screenConfig,
-  ) {
-    if (_searchQuery.isEmpty) return records;
-    final query = _searchQuery.toLowerCase();
-    return records.where((r) {
-      return screenConfig.getTitle(r).toLowerCase().contains(query) ||
-          (screenConfig.getSubtitle(r)?.toLowerCase().contains(query) ?? false);
-    }).toList();
   }
 }
