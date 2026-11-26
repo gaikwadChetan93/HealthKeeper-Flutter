@@ -20,7 +20,10 @@ class MyDoctorsScreen extends ConsumerWidget {
     final doctors = ref.watch(doctorsProvider);
     return Scaffold(
       body: Column(children: [
-        const StandardAppHeader(title: 'My Doctors'),
+        StandardAppHeader(
+          title: 'My Doctors',
+          onBack: context.canPop() ? () => context.pop() : null,
+        ),
         Expanded(
           child: doctors.when(
             skipLoadingOnReload: true,

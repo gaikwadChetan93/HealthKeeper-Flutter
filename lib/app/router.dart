@@ -103,6 +103,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
+      // Family list on its own (opened from Settings)
+      GoRoute(
+          path: Routes.family, builder: (_, __) => const FamilyMembersScreen()),
+
       // Family member CRUD
       GoRoute(
           path: Routes.addFamilyMember,

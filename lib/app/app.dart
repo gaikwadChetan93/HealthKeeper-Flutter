@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/state/theme_provider.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
 
@@ -28,5 +29,3 @@ class HealthKeeperApp extends ConsumerWidget {
     );
   }
 }
-
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);

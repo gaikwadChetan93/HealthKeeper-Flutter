@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_dimens.dart';
+import '../../../app/theme/app_typography.dart';
 import '../../../core/models/field_descriptor.dart';
 import '../../../core/widgets/app_date_picker_field.dart';
 import '../../../core/widgets/app_dropdown_field.dart';
@@ -98,12 +101,16 @@ class FieldRenderer extends StatelessWidget {
           options: d.options,
           onChanged: (v) => onChanged(v),
         ),
-      BooleanFieldDescriptor d => CheckboxListTile(
-          title: Text(d.label),
-          value: value as bool? ?? false,
-          onChanged: (v) => onChanged(v),
-          controlAffinity: ListTileControlAffinity.leading,
-          contentPadding: EdgeInsets.zero,
+      BooleanFieldDescriptor d => Row(
+          children: [
+            Expanded(child: Text(d.label, style: AppTypography.cardTitle)),
+            Switch(
+              value: value as bool? ?? false,
+              onChanged: (v) => onChanged(v),
+              activeThumbColor: AppColors.onPrimary,
+              activeTrackColor: AppColors.primary,
+            ),
+          ],
         ),
       FileFieldDescriptor d => _FilePlaceholder(label: d.label),
       MeasurementFieldDescriptor d => AppTextField(
@@ -140,7 +147,6 @@ class _FilePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return InkWell(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -150,33 +156,22 @@ class _FilePlaceholder extends StatelessWidget {
           ),
         );
       },
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(color: theme.colorScheme.outline),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.upload_file, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label, style: theme.textTheme.bodyMedium),
-                  Text(
-                    'Tap to upload files',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
+      borderRadius: BorderRadius.circular(AppDimens.radiusChip),
+      child: Row(
+        children: [
+          const Icon(Icons.attach_file, size: 18, color: AppColors.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label.toUpperCase(), style: AppTypography.eyebrow.copyWith(letterSpacing: .05)),
+                const SizedBox(height: 3),
+                Text('Tap to attach files', style: AppTypography.caption.copyWith(color: AppColors.primary)),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

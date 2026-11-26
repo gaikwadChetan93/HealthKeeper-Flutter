@@ -8,6 +8,7 @@ class Routes {
   static const createProfile = '/create-profile';
   static const home = '/';
   static const doctors = '/doctors';
+  static const family = '/family';
   static const settings = '/settings';
 
   // Family member

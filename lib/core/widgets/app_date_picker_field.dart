@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_typography.dart';
+
 class AppDatePickerField extends StatelessWidget {
   final String label;
   final DateTime? value;
@@ -75,11 +78,24 @@ class AppDatePickerField extends StatelessWidget {
 
     return TextFormField(
       readOnly: true,
+      style: AppTypography.cardTitle.copyWith(fontSize: 15, height: 1.4),
       decoration: InputDecoration(
-        labelText: required ? '$label *' : label,
+        labelText: required ? '${label.toUpperCase()} *' : label.toUpperCase(),
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelStyle: AppTypography.fieldLabel,
+        floatingLabelStyle: AppTypography.fieldLabel,
         hintText: 'Select ${includeTime ? "date & time" : "date"}',
+        hintStyle: AppTypography.cardTitle.copyWith(color: AppColors.textFaint, fontWeight: FontWeight.w400),
         errorText: errorText,
-        suffixIcon: const Icon(Icons.calendar_today_outlined, size: 20),
+        errorStyle: AppTypography.captionSmall.copyWith(color: AppColors.error),
+        suffixIcon: const Icon(Icons.event, size: 18, color: AppColors.primary),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        focusedErrorBorder: InputBorder.none,
+        isDense: true,
+        contentPadding: const EdgeInsets.only(top: 5, bottom: 2),
       ),
       controller: TextEditingController(
         text: value != null ? format.format(value!) : '',
