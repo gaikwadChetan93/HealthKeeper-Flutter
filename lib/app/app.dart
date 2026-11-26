@@ -19,6 +19,12 @@ class HealthKeeperApp extends ConsumerWidget {
       darkTheme: AppTheme.dark(),
       themeMode: themeMode,
       routerConfig: router,
+      // Android draws apps edge-to-edge behind its navigation buttons. Keep every
+      // screen, sheet and dialog above them; the strip below matches the page.
+      builder: (context, child) => ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        child: SafeArea(top: false, child: child!),
+      ),
     );
   }
 }

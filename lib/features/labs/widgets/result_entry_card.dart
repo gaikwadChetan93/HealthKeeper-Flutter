@@ -142,7 +142,7 @@ class ResultEntryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        flex: 3,
+                        flex: 1,
                         child: TextField(
                           controller: entry.value,
                           keyboardType: number,
@@ -152,7 +152,7 @@ class ResultEntryCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        flex: 2,
+                        flex: 1,
                         child: DropdownButtonFormField<String>(
                           initialValue: entry.unit,
                           isExpanded: true,
