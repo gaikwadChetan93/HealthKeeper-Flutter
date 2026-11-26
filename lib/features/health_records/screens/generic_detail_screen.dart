@@ -159,7 +159,8 @@ class _RecordDetails extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
-                    onPressed: () => context.push(Routes.doctorDetail(record.doctorId!)),
+                    onPressed: () =>
+                        context.push(Routes.doctorDetail(record.doctorId!)),
                     icon: const Icon(Icons.medical_services_outlined, size: 18),
                     label: const Text('Open doctor'),
                   ),

@@ -13,3 +13,10 @@ const doctorFields = {
 
 /// Form-state key holding the linked doctor's id (not a module field).
 const doctorIdKey = '_doctorId';
+
+/// The clinic or hospital field filled from a picked doctor's clinic when empty.
+const clinicFields = {
+  'medical_visit': 'hospitalName',
+  'appointment': 'hospitalName',
+  'surgery': 'hospital',
+};

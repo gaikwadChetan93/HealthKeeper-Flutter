@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/route_constants.dart';
 import '../../../app/theme/app_dimens.dart';
 import '../../../core/config/module_registry.dart';
+import '../../../core/models/domain_config.dart';
 import '../../../core/records/record_format.dart';
 import '../../../core/state/doctor_providers.dart';
 import '../../../core/widgets/generic_record_card.dart';
@@ -92,7 +93,7 @@ class _DoctorDetailScreenState extends ConsumerState<DoctorDetailScreen> {
                       error: e,
                       onRetry: () => ref.invalidate(doctorRecordsProvider))
                 ],
-                data: (items) => _history(context, items),
+                data: (items) => _history(context, items, doctor.name),
               ),
             ]),
           ),
@@ -100,7 +101,18 @@ class _DoctorDetailScreenState extends ConsumerState<DoctorDetailScreen> {
     );
   }
 
-  List<Widget> _history(BuildContext context, List<DoctorRecord> items) {
+  /// "Ravi Sharma · City Heart Clinic · 10:10", leaving out the doctor's own name.
+  String _detail(DomainConfig config, DoctorRecord i, String doctorName) {
+    final title = RecordFormat.title(config, i.record);
+    return [
+      i.memberName,
+      if (title != doctorName && title != config.domainName) title,
+      RecordFormat.subtitle(config, i.record),
+    ].whereType<String>().where((s) => s.isNotEmpty).join(' · ');
+  }
+
+  List<Widget> _history(
+      BuildContext context, List<DoctorRecord> items, String doctorName) {
     final theme = Theme.of(context);
     final members = {for (final i in items) i.memberName}.toList()..sort();
     final shown = _member == null
@@ -143,8 +155,8 @@ class _DoctorDetailScreenState extends ConsumerState<DoctorDetailScreen> {
       for (final i in shown)
         if (ModuleRegistry.getModuleByKey(i.record.module) case final config?)
           GenericRecordCard(
-            title: RecordFormat.title(config, i.record),
-            subtitle: '${config.domainName} · ${i.memberName}',
+            title: config.domainName,
+            subtitle: _detail(config, i, doctorName),
             date: i.record.recordDate,
             icon: config.icon,
             moduleKey: i.record.module,

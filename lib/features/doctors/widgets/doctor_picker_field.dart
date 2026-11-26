@@ -17,12 +17,16 @@ class DoctorPickerField extends ConsumerStatefulWidget {
   /// The name as typed or picked, and the linked doctor's id (null if none).
   final void Function(String? name, String? doctorId) onChanged;
 
+  /// Called when a saved doctor is picked (e.g. to fill in their clinic).
+  final ValueChanged<Doctor>? onPicked;
+
   const DoctorPickerField({
     super.key,
     required this.descriptor,
     required this.name,
     required this.doctorId,
     required this.onChanged,
+    this.onPicked,
     this.error,
   });
 
@@ -47,6 +51,7 @@ class _DoctorPickerFieldState extends ConsumerState<DoctorPickerField> {
     _controller.text = d.name;
     setState(() => _doctorId = d.id);
     widget.onChanged(d.name, d.id);
+    widget.onPicked?.call(d);
   }
 
   void _typed(String text, List<Doctor> doctors) {
@@ -105,9 +110,11 @@ class _DoctorPickerFieldState extends ConsumerState<DoctorPickerField> {
           errorText: widget.error,
           helperText: linked
               ? 'Linked to My Doctors'
-              : (doctors.isEmpty
-                  ? null
-                  : 'Start typing to pick from My Doctors'),
+              : controller.text.trim().isNotEmpty
+                  ? 'Not in My Doctors — tap the icon to save'
+                  : (doctors.isEmpty
+                      ? null
+                      : 'Start typing to pick from My Doctors'),
           prefixIcon: Icon(
               linked
                   ? Icons.verified_outlined
@@ -131,7 +138,11 @@ class _DoctorPickerFieldState extends ConsumerState<DoctorPickerField> {
         alignment: Alignment.topLeft,
         child: Material(
           elevation: 4,
-          borderRadius: BorderRadius.circular(8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side:
+                BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+          ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 260, maxWidth: 360),
             child: ListView(

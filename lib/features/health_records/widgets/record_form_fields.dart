@@ -34,6 +34,15 @@ class RecordFormFields extends ConsumerWidget {
               notifier.updateField(f.key, name);
               notifier.updateField(doctorIdKey, doctorId);
             },
+            onPicked: (d) {
+              // Fill the clinic from the doctor's details if it's still empty.
+              final data = ref.read(formStateProvider).formData;
+              final clinicField = clinicFields[moduleKey];
+              final current = (data[clinicField] as String?)?.trim() ?? '';
+              if (clinicField != null && d.clinic != null && current.isEmpty) {
+                notifier.prefillForm({...data, clinicField: d.clinic});
+              }
+            },
           )
         : FieldRenderer(
             // Keyed by the prefilled value so an edit form shows the loaded record.
