@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_dimens.dart';
+import '../../../app/theme/app_typography.dart';
 
 class SettingsItem extends StatelessWidget {
   final IconData icon;
@@ -18,57 +20,35 @@ class SettingsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppDimens.radiusM),
+      borderRadius: BorderRadius.circular(AppDimens.radiusTile),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppDimens.spacingL,
-          vertical: AppDimens.spacingM,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Row(
           children: [
             Container(
-              width: 44,
-              height: 44,
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(AppDimens.radiusS),
+                color: AppColors.primaryContainer,
+                borderRadius: BorderRadius.circular(AppDimens.radiusChip),
               ),
-              child: Icon(
-                icon,
-                color: colorScheme.onPrimaryContainer,
-                size: AppDimens.iconSize,
-              ),
+              child: Icon(icon, color: AppColors.primary, size: 20),
             ),
-            const SizedBox(width: AppDimens.spacingL),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: AppDimens.spacingXS),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+                  Text(title, style: AppTypography.cardTitle),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: AppTypography.caption),
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: colorScheme.onSurfaceVariant,
-            ),
+            const Icon(Icons.chevron_right, size: 18, color: AppColors.textFaint),
           ],
         ),
       ),
