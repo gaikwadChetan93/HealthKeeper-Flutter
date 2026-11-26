@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import 'api_config.dart';
 import 'api_exception.dart';
@@ -45,6 +46,19 @@ class ApiClient {
 
   Future<dynamic> delete(String path) => _request('DELETE', path);
 
+  /// Sends a file as multipart/form-data (field "file").
+  Future<dynamic> upload(String path,
+          {required List<int> bytes,
+          required String filename,
+          required String contentType,
+          String? idempotencyKey}) =>
+      _request('POST', path,
+          file: UploadPart(bytes, filename, contentType),
+          headers: {
+            if (idempotencyKey != null) 'Idempotency-Key': idempotencyKey
+          },
+          timeout: ApiConfig.uploadTimeout);
+
   /// Exchanges a refresh token for new tokens. Returns false if signing in again is needed.
   Future<bool> refreshSession() {
     return _refreshing ??= _doRefresh().whenComplete(() => _refreshing = null);
@@ -77,6 +91,8 @@ class ApiClient {
     Map<String, String> headers = const {},
     bool auth = true,
     bool retried = false,
+    UploadPart? file,
+    Duration? timeout,
   }) async {
     if (auth && tokens.accessToken == null && !await refreshSession()) {
       _sessionEnded();
@@ -87,23 +103,34 @@ class ApiClient {
     };
     final uri = Uri.parse('$baseUrl$path')
         .replace(queryParameters: params.isEmpty ? null : params);
-    final request = http.Request(method, uri)
-      ..headers.addAll({
-        'Accept': 'application/json',
-        'X-Request-ID': _requestId(),
-        if (auth && tokens.accessToken != null)
-          'Authorization': 'Bearer ${tokens.accessToken}',
-        ...headers,
-      });
-    if (body != null) {
-      request.headers['Content-Type'] = 'application/json';
-      request.body = jsonEncode(body);
+    final common = {
+      'Accept': 'application/json',
+      'X-Request-ID': _requestId(),
+      if (auth && tokens.accessToken != null)
+        'Authorization': 'Bearer ${tokens.accessToken}',
+      ...headers,
+    };
+    final http.BaseRequest request;
+    if (file != null) {
+      request = http.MultipartRequest(method, uri)
+        ..headers.addAll(common)
+        ..files.add(http.MultipartFile.fromBytes('file', file.bytes,
+            filename: file.filename,
+            contentType: MediaType.parse(file.contentType)));
+    } else {
+      final r = http.Request(method, uri)..headers.addAll(common);
+      if (body != null) {
+        r.headers['Content-Type'] = 'application/json';
+        r.body = jsonEncode(body);
+      }
+      request = r;
     }
 
     http.Response response;
     try {
-      response = await http.Response.fromStream(
-          await _http.send(request).timeout(ApiConfig.requestTimeout));
+      response = await http.Response.fromStream(await _http
+          .send(request)
+          .timeout(timeout ?? ApiConfig.requestTimeout));
     } on SocketException {
       throw ApiException.network();
     } on TimeoutException {
@@ -122,7 +149,9 @@ class ApiClient {
               query: query,
               headers: headers,
               auth: auth,
-              retried: true);
+              retried: true,
+              file: file,
+              timeout: timeout);
         }
       }
       _sessionEnded();
@@ -175,4 +204,13 @@ class ApiClient {
 
   /// A random key for one save, so a retry after a dropped connection doesn't duplicate it.
   static String newIdempotencyKey() => _requestId();
+}
+
+/// A file to send with [ApiClient.upload].
+class UploadPart {
+  final List<int> bytes;
+  final String filename;
+  final String contentType;
+
+  const UploadPart(this.bytes, this.filename, this.contentType);
 }

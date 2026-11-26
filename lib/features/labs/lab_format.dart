@@ -49,6 +49,33 @@ class LabFormat {
     return 'No range — add the range printed on your report';
   }
 
+  /// Same rules as the server: "µIU/mL" == "uIU/ml", "mcg" == "ug", "x10³/µL" == "10^3/ul".
+  static String normUnit(String u) {
+    var s = u.trim().toLowerCase();
+    for (final (a, b) in const [
+      ('µ', 'u'),
+      ('μ', 'u'),
+      ('mcg', 'ug'),
+      ('×', 'x'),
+      ('³', '^3'),
+      ('⁶', '^6'),
+      ('⁹', '^9'),
+      ('cu mm', 'cumm'),
+      ('cu.mm', 'cumm'),
+      ('mm3', 'cumm'),
+      (' ', ''),
+    ]) {
+      s = s.replaceAll(a, b);
+    }
+    if (s.startsWith('x10')) s = s.substring(1);
+    if (s.endsWith('.')) s = s.substring(0, s.length - 1);
+    return s;
+  }
+
+  /// The test's unit spelled as in its list, or null if [unit] isn't one of them.
+  static String? matchUnit(LabTestDef test, String unit) =>
+      test.units.where((u) => normUnit(u) == normUnit(unit)).firstOrNull;
+
   /// "(you entered 5.5 mmol/L)" when the value was typed in another unit.
   static String? entered(LabResultItem r) => r.enteredUnit == r.unit
       ? null

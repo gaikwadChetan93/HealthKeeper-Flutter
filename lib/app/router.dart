@@ -20,6 +20,8 @@ import '../features/labs/screens/add_lab_report_screen.dart';
 import '../features/labs/screens/lab_report_screen.dart';
 import '../features/labs/screens/lab_results_screen.dart';
 import '../features/labs/screens/lab_test_screen.dart';
+import '../features/labs/screens/review_upload_screen.dart';
+import '../features/labs/screens/upload_status_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/vitals/screens/vital_trend_screen.dart';
 import '../features/privacy/screens/privacy_and_data_screen.dart';
@@ -148,6 +150,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/lab-report/:reportId',
         builder: (_, state) =>
             LabReportScreen(reportId: state.pathParameters['reportId']!),
+      ),
+
+      GoRoute(
+        path: '/lab-upload/:uploadId',
+        builder: (_, state) =>
+            UploadStatusScreen(uploadId: state.pathParameters['uploadId']!),
+      ),
+      GoRoute(
+        path: '/lab-upload/:uploadId/review',
+        builder: (_, state) =>
+            ReviewUploadScreen(uploadId: state.pathParameters['uploadId']!),
       ),
 
       // Vital trends

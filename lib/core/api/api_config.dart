@@ -26,4 +26,7 @@ class ApiConfig {
   static bool get showDevSignIn => kDebugMode;
 
   static const requestTimeout = Duration(seconds: 20);
+
+  /// Report PDFs can take a while on a slow connection.
+  static const uploadTimeout = Duration(minutes: 2);
 }
