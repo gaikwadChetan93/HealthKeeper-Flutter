@@ -6,6 +6,7 @@ import '../../../core/widgets/fill_or_scroll.dart';
 import '../../../core/api/api_config.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../widgets/dev_sign_in_sheet.dart';
+import '../widgets/restore_account_dialog.dart';
 
 /// Google is the only way to sign in. Signing in is required: health records
 /// are kept on the server, never only on the phone.
@@ -22,7 +23,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Future<void> _googleSignIn() async {
     // Needs the Google OAuth client IDs (Android + web) from Google Cloud.
     // Once they exist: get an ID token from the Google sign-in SDK and pass it
-    // to ref.read(authProvider.notifier).googleSignIn(idToken).
+    // to signInWithRestore(context, (restore) => ref
+    //     .read(authProvider.notifier).googleSignIn(idToken, restore: restore)).
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
@@ -37,9 +39,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     if (result == null || !mounted) return;
     setState(() => _isLoading = true);
     try {
-      await ref
-          .read(authProvider.notifier)
-          .devSignIn(result.email, result.name);
+      await signInWithRestore(
+          context,
+          (restore) => ref
+              .read(authProvider.notifier)
+              .devSignIn(result.email, result.name, restore: restore));
       // The router moves on by itself once signed in.
     } catch (e) {
       if (mounted) {

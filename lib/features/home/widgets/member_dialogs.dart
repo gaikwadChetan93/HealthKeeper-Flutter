@@ -32,7 +32,9 @@ Future<bool> confirmDeleteMember(BuildContext context, String name) async {
     builder: (c) => AlertDialog(
       title: Text('Delete $name?'),
       content: const Text(
-          'Their health records will be deleted too. This can’t be undone after 30 days.'),
+          'Their health records, lab reports and uploaded files will be deleted too. '
+          'They disappear from the app now and are removed from our servers within 30 days. '
+          'This can’t be undone.'),
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(c, false),

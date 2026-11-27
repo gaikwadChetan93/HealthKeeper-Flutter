@@ -44,7 +44,8 @@ class ApiClient {
           {required Object body, required int version}) =>
       _request('PATCH', path, body: body, headers: {'If-Match': '"$version"'});
 
-  Future<dynamic> delete(String path) => _request('DELETE', path);
+  Future<dynamic> delete(String path, {Object? body}) =>
+      _request('DELETE', path, body: body);
 
   /// Sends a file as multipart/form-data (field "file").
   Future<dynamic> upload(String path,
