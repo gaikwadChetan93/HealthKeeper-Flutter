@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Health Keeper is a Flutter health-tracking app for families. It is a **thin online client** of the Health Keeper API (Python/FastAPI, repo `healthkeeper-backend`): sign-in, family members and all health records are read from and saved to the API. No health data is stored on the device; only the refresh token is kept, in the platform keystore (`flutter_secure_storage`). Doctors are still sample data (`lib/core/mock/mock_data.dart`) until a later release.
+Health Keeper is a Flutter health-tracking app for families. It is a **thin online client** of the Health Keeper API (Python/FastAPI, repo `healthkeeper-backend`): sign-in, family members and all health records are read from and saved to the API. No health data is stored on the device; only the refresh token is kept, in the platform keystore (`flutter_secure_storage`). Doctors are real data too (`lib/core/state/doctor_providers.dart`); records link to a saved doctor through the module's doctor field (`lib/core/records/doctor_fields.dart`).
 
 ## Build & Run Commands
 

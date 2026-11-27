@@ -31,6 +31,7 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
     final member = ref.watch(memberProvider(widget.memberId));
     final counts =
         ref.watch(summaryProvider(widget.memberId)).valueOrNull ?? const {};
+    final textScale = MediaQuery.textScalerOf(context).scale(14) / 14;
     final labReports =
         ref.watch(labReportsProvider(widget.memberId)).valueOrNull?.length;
     final theme = Theme.of(context);
@@ -102,10 +103,11 @@ class _HealthOverviewScreenState extends ConsumerState<HealthOverviewScreen> {
                 ? VitalsDashboard(memberId: widget.memberId)
                 : GridView.builder(
                     padding: const EdgeInsets.all(AppDimens.spacingL),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 0.82,
+                    // Card height follows the text size; with large text, two
+                    // columns so names like "Appointment" fit on one line.
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: textScale > 1.15 ? 2 : 3,
+                      mainAxisExtent: 86 + 46 * textScale,
                       crossAxisSpacing: AppDimens.spacingM,
                       mainAxisSpacing: AppDimens.spacingM,
                     ),

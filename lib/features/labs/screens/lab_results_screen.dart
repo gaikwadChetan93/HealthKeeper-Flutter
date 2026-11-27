@@ -12,7 +12,9 @@ import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/standard_app_header.dart';
 import '../lab_format.dart';
+import '../widgets/add_lab_choice.dart';
 import '../widgets/lab_result_tile.dart';
+import '../widgets/pending_uploads.dart';
 
 /// A member's lab results: latest of each test grouped by panel, and the reports.
 class LabResultsScreen extends ConsumerStatefulWidget {
@@ -27,7 +29,7 @@ class LabResultsScreen extends ConsumerStatefulWidget {
 class _LabResultsScreenState extends ConsumerState<LabResultsScreen> {
   int _tab = 0;
 
-  void _add() => context.push(Routes.labAdd(widget.memberId));
+  void _add() => showAddLabChoice(context, ref, widget.memberId);
 
   Widget _empty() => EmptyStateWidget(
         icon: Icons.biotech_outlined,
@@ -62,6 +64,7 @@ class _LabResultsScreenState extends ConsumerState<LabResultsScreen> {
               onSelectionChanged: (v) => setState(() => _tab = v.first),
             ),
           ),
+          PendingUploads(memberId: widget.memberId),
           Expanded(child: _tab == 0 ? _byTest() : _reports()),
         ],
       ),

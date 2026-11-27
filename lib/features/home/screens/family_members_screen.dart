@@ -23,7 +23,7 @@ class FamilyMembersScreen extends ConsumerWidget {
         children: [
           StandardAppHeader(
             title: 'Family Members',
-            onBack: () => context.pop(),
+            onBack: context.canPop() ? () => context.pop() : null,
           ),
           Expanded(
             child: members.when(

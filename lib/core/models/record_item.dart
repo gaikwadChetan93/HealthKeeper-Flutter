@@ -6,6 +6,9 @@ class RecordItem {
   final String module;
   final DateTime recordDate;
   final Map<String, dynamic> payload;
+
+  /// The saved doctor this record is linked to, if any.
+  final String? doctorId;
   final int version;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -16,6 +19,7 @@ class RecordItem {
     required this.module,
     required this.recordDate,
     required this.payload,
+    this.doctorId,
     required this.version,
     required this.createdAt,
     required this.updatedAt,
@@ -27,6 +31,7 @@ class RecordItem {
         module: j['module'] as String,
         recordDate: DateTime.parse(j['record_date'] as String).toLocal(),
         payload: Map<String, dynamic>.from(j['payload'] as Map),
+        doctorId: j['doctor_id'] as String?,
         version: j['version'] as int,
         createdAt: DateTime.parse(j['created_at'] as String).toLocal(),
         updatedAt: DateTime.parse(j['updated_at'] as String).toLocal(),

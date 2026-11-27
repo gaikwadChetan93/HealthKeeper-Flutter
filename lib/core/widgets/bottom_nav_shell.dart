@@ -23,39 +23,44 @@ class BottomNavShell extends StatelessWidget {
 
     return Scaffold(
       body: child,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppDimens.spacingL,
-          vertical: AppDimens.spacingS,
-        ),
-        child: Container(
-          height: 64,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.inverseSurface,
-            borderRadius: BorderRadius.circular(AppDimens.radiusXL),
+      // Text in the bar is capped so large system text doesn't overflow its
+      // fixed height. (The app keeps it above the system navigation, see app.dart.)
+      bottomNavigationBar: MediaQuery.withClampedTextScaling(
+        maxScaleFactor: 1.15,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimens.spacingL,
+            vertical: AppDimens.spacingS,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _NavItem(
-                icon: Icons.people_outline,
-                label: 'Family',
-                isSelected: index == 0,
-                onTap: () => context.go(Routes.home),
-              ),
-              _NavItem(
-                icon: Icons.medical_services_outlined,
-                label: 'Doctors',
-                isSelected: index == 1,
-                onTap: () => context.go(Routes.doctors),
-              ),
-              _NavItem(
-                icon: Icons.settings_outlined,
-                label: 'Settings',
-                isSelected: index == 2,
-                onTap: () => context.go(Routes.settings),
-              ),
-            ],
+          child: Container(
+            height: 64,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.inverseSurface,
+              borderRadius: BorderRadius.circular(AppDimens.radiusXL),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _NavItem(
+                  icon: Icons.people_outline,
+                  label: 'Family',
+                  isSelected: index == 0,
+                  onTap: () => context.go(Routes.home),
+                ),
+                _NavItem(
+                  icon: Icons.medical_services_outlined,
+                  label: 'Doctors',
+                  isSelected: index == 1,
+                  onTap: () => context.go(Routes.doctors),
+                ),
+                _NavItem(
+                  icon: Icons.settings_outlined,
+                  label: 'Settings',
+                  isSelected: index == 2,
+                  onTap: () => context.go(Routes.settings),
+                ),
+              ],
+            ),
           ),
         ),
       ),

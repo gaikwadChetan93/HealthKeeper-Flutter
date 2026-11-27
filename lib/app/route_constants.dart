@@ -8,6 +8,7 @@ class Routes {
   static const createProfile = '/create-profile';
   static const home = '/';
   static const doctors = '/doctors';
+  static const family = '/family';
   static const settings = '/settings';
 
   // Family member
@@ -16,7 +17,8 @@ class Routes {
 
   // Doctor
   static const addDoctor = '/doctor/add';
-  static String editDoctor(int id) => '/doctor/edit/$id';
+  static String editDoctor(String id) => '/doctor/edit/$id';
+  static String doctorDetail(String id) => '/doctor/view/$id';
 
   // Health overview
   static String healthOverview(String memberId) => '/health-overview/$memberId';
@@ -38,6 +40,9 @@ class Routes {
   static String labTest(String memberId, String testId) =>
       '/labs/$memberId/test/$testId';
   static String labReport(String reportId) => '/lab-report/$reportId';
+  static String labUpload(String uploadId) => '/lab-upload/$uploadId';
+  static String labUploadReview(String uploadId) =>
+      '/lab-upload/$uploadId/review';
 
   // Vital charts
   static String vitalChart(String vitalKey, String memberId) =>

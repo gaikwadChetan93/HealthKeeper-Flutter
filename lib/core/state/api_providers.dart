@@ -4,6 +4,7 @@ import '../api/api_client.dart';
 import '../auth/auth_controller.dart';
 import '../models/member.dart';
 import '../models/record_item.dart';
+import 'doctor_providers.dart';
 import 'vitals_providers.dart';
 
 // ─── Family members ───────────────────────────────────────────
@@ -144,19 +145,24 @@ class RecordActions {
 
   Future<RecordItem> create(
       String memberId, String module, Map<String, dynamic> payload,
-      {required String idempotencyKey}) async {
-    final r = RecordItem.fromJson(await _api.post(
-        '/v1/members/$memberId/records',
-        body: {'module': module, 'payload': payload},
-        idempotencyKey: idempotencyKey) as Map<String, dynamic>);
+      {required String idempotencyKey, String? doctorId}) async {
+    final r =
+        RecordItem.fromJson(await _api.post('/v1/members/$memberId/records',
+            body: {
+              'module': module,
+              'payload': payload,
+              if (doctorId != null) 'doctor_id': doctorId,
+            },
+            idempotencyKey: idempotencyKey) as Map<String, dynamic>);
     _refresh(r);
     return r;
   }
 
-  Future<RecordItem> update(
-      RecordItem record, Map<String, dynamic> payload) async {
+  /// With [linkDoctor], sends [doctorId] (null unlinks the saved doctor).
+  Future<RecordItem> update(RecordItem record, Map<String, dynamic> payload,
+      {bool linkDoctor = false, String? doctorId}) async {
     final r = RecordItem.fromJson(await _api.patch('/v1/records/${record.id}',
-        body: {'payload': payload},
+        body: {'payload': payload, if (linkDoctor) 'doctor_id': doctorId},
         version: record.version) as Map<String, dynamic>);
     _refresh(r);
     return r;
@@ -172,6 +178,8 @@ class RecordActions {
     _ref.invalidate(recordProvider(r.id));
     _ref.invalidate(summaryProvider(r.memberId));
     _ref.invalidate(vitalsSummaryProvider(r.memberId));
+    _ref.invalidate(doctorsProvider); // record counts per doctor
+    _ref.invalidate(doctorRecordsProvider);
     _ref.invalidate(vitalSeriesProvider);
   }
 }

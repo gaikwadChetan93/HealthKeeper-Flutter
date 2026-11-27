@@ -3,8 +3,6 @@ import 'package:intl/intl.dart';
 
 import '../../app/theme/app_dimens.dart';
 import '../../app/theme/vital_module_colors.dart';
-import '../models/sync_status.dart';
-import 'sync_status_badge.dart';
 
 class GenericRecordCard extends StatefulWidget {
   final String title;
@@ -12,7 +10,6 @@ class GenericRecordCard extends StatefulWidget {
   final DateTime date;
   final IconData icon;
   final String moduleKey;
-  final SyncStatus syncStatus;
   final String? categoryTag;
   final int? attachmentCount;
   final VoidCallback? onTap;
@@ -24,7 +21,6 @@ class GenericRecordCard extends StatefulWidget {
     required this.date,
     required this.icon,
     required this.moduleKey,
-    this.syncStatus = SyncStatus.synced,
     this.categoryTag,
     this.attachmentCount,
     this.onTap,
@@ -90,7 +86,6 @@ class _GenericRecordCardState extends State<GenericRecordCard> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          SyncStatusBadge(status: widget.syncStatus),
                         ],
                       ),
                       if (widget.subtitle != null) ...[

@@ -8,6 +8,7 @@ import '../../../core/api/api_exception.dart';
 import '../../../core/config/module_registry.dart';
 import '../../../core/models/domain_config.dart';
 import '../../../core/models/record_item.dart';
+import '../../../core/records/doctor_fields.dart';
 import '../../../core/records/record_format.dart';
 import '../../../core/state/api_providers.dart';
 import '../../../core/state/form_state_notifier.dart';
@@ -88,13 +89,20 @@ class _RecordFormState extends ConsumerState<_RecordForm> {
       final form = ref.read(formStateProvider.notifier);
       form.clearForm();
       if (existing != null)
-        form.prefillForm(RecordFormat.toForm(widget.config, existing.payload));
+        form.prefillForm({
+          ...RecordFormat.toForm(widget.config, existing.payload),
+          doctorIdKey: existing.doctorId,
+        });
     });
   }
 
   Future<void> _save() async {
     final notifier = ref.read(formStateProvider.notifier);
     if (!notifier.validate(widget.config.fields)) return;
+    final hasDoctorField = doctorFields.containsKey(widget.config.domainKey);
+    final doctorId = hasDoctorField
+        ? ref.read(formStateProvider).formData[doctorIdKey] as String?
+        : null;
     final payload = RecordFormat.toPayload(
         widget.config, ref.read(formStateProvider).formData);
     notifier.setSubmitting(true);
@@ -102,9 +110,10 @@ class _RecordFormState extends ConsumerState<_RecordForm> {
     try {
       if (widget.existing == null) {
         await actions.create(widget.memberId, widget.config.domainKey, payload,
-            idempotencyKey: _idempotencyKey);
+            idempotencyKey: _idempotencyKey, doctorId: doctorId);
       } else {
-        await actions.update(widget.existing!, payload);
+        await actions.update(widget.existing!, payload,
+            linkDoctor: hasDoctorField, doctorId: doctorId);
       }
       if (!mounted) return;
       showMessage(
@@ -138,7 +147,9 @@ class _RecordFormState extends ConsumerState<_RecordForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          RecordFormFields(fields: fields.where((f) => !f.isAdvanced).toList()),
+          RecordFormFields(
+              moduleKey: widget.config.domainKey,
+              fields: fields.where((f) => !f.isAdvanced).toList()),
           if (advanced.isNotEmpty) ...[
             const SizedBox(height: AppDimens.spacingL),
             InkWell(
@@ -159,7 +170,8 @@ class _RecordFormState extends ConsumerState<_RecordForm> {
             ),
             if (_showAdvanced) ...[
               const SizedBox(height: AppDimens.spacingL),
-              RecordFormFields(fields: advanced),
+              RecordFormFields(
+                  moduleKey: widget.config.domainKey, fields: advanced),
             ],
           ],
           const SizedBox(height: AppDimens.spacingXXL),

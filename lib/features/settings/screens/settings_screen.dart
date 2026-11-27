@@ -22,7 +22,7 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           StandardAppHeader(
             title: 'Settings',
-            onBack: () => context.pop(),
+            onBack: context.canPop() ? () => context.pop() : null,
           ),
           Expanded(
             child: ListView(
@@ -81,17 +81,19 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: 'Your records stay safe on Health Keeper',
                   onTap: () => _confirmSignOut(context, ref),
                 ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: AppDimens.spacingXL),
+                  child: Text(
+                    'Health Keeper • Made with love for your wellness',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppDimens.spacingXL),
-            child: Text(
-              'Health Keeper • Made with love for your wellness',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-              ),
-              textAlign: TextAlign.center,
             ),
           ),
         ],

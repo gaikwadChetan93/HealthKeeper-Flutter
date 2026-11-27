@@ -12,6 +12,7 @@ import '../features/home/screens/family_members_screen.dart';
 import '../features/home/screens/add_family_member_screen.dart';
 import '../features/doctors/screens/my_doctors_screen.dart';
 import '../features/doctors/screens/add_doctor_screen.dart';
+import '../features/doctors/screens/doctor_detail_screen.dart';
 import '../features/health_overview/screens/health_overview_screen.dart';
 import '../features/health_records/screens/generic_list_screen.dart';
 import '../features/health_records/screens/generic_form_screen.dart';
@@ -20,6 +21,8 @@ import '../features/labs/screens/add_lab_report_screen.dart';
 import '../features/labs/screens/lab_report_screen.dart';
 import '../features/labs/screens/lab_results_screen.dart';
 import '../features/labs/screens/lab_test_screen.dart';
+import '../features/labs/screens/review_upload_screen.dart';
+import '../features/labs/screens/upload_status_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/vitals/screens/vital_trend_screen.dart';
 import '../features/privacy/screens/privacy_and_data_screen.dart';
@@ -100,6 +103,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
+      // Family list on its own (opened from Settings)
+      GoRoute(
+          path: Routes.family, builder: (_, __) => const FamilyMembersScreen()),
+
       // Family member CRUD
       GoRoute(
           path: Routes.addFamilyMember,
@@ -110,13 +117,18 @@ final routerProvider = Provider<GoRouter>((ref) {
             AddFamilyMemberScreen(memberId: state.pathParameters['id']),
       ),
 
-      // Doctor CRUD (still sample data; doctors come in a later release)
+      // Doctors
       GoRoute(
           path: Routes.addDoctor, builder: (_, __) => const AddDoctorScreen()),
       GoRoute(
         path: '/doctor/edit/:id',
-        builder: (_, state) => AddDoctorScreen(
-            doctorId: int.tryParse(state.pathParameters['id'] ?? '')),
+        builder: (_, state) =>
+            AddDoctorScreen(doctorId: state.pathParameters['id']),
+      ),
+      GoRoute(
+        path: '/doctor/view/:id',
+        builder: (_, state) =>
+            DoctorDetailScreen(doctorId: state.pathParameters['id']!),
       ),
 
       // Health overview
@@ -148,6 +160,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/lab-report/:reportId',
         builder: (_, state) =>
             LabReportScreen(reportId: state.pathParameters['reportId']!),
+      ),
+
+      GoRoute(
+        path: '/lab-upload/:uploadId',
+        builder: (_, state) =>
+            UploadStatusScreen(uploadId: state.pathParameters['uploadId']!),
+      ),
+      GoRoute(
+        path: '/lab-upload/:uploadId/review',
+        builder: (_, state) =>
+            ReviewUploadScreen(uploadId: state.pathParameters['uploadId']!),
       ),
 
       // Vital trends

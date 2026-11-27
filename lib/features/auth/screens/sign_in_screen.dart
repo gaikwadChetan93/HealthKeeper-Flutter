@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_dimens.dart';
+import '../../../core/widgets/fill_or_scroll.dart';
 import '../../../core/api/api_config.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../widgets/dev_sign_in_sheet.dart';
@@ -57,59 +58,61 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppDimens.spacingXL),
-          child: Column(
-            children: [
-              const Spacer(),
-              Icon(Icons.lock_outline,
-                  size: 80, color: theme.colorScheme.primary),
-              const SizedBox(height: AppDimens.spacingXL),
-              Text(
-                'Sign In',
-                style: theme.textTheme.headlineMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: AppDimens.spacingM),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppDimens.spacingXL),
-                child: Text(
-                  'Sign in with your Google account. Your family’s records are kept securely '
-                  'on Health Keeper’s servers in India, so they’re safe if you lose your phone.',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  textAlign: TextAlign.center,
+        child: FillOrScroll(
+          child: Padding(
+            padding: const EdgeInsets.all(AppDimens.spacingXL),
+            child: Column(
+              children: [
+                const Spacer(),
+                Icon(Icons.lock_outline,
+                    size: 80, color: theme.colorScheme.primary),
+                const SizedBox(height: AppDimens.spacingXL),
+                Text(
+                  'Sign In',
+                  style: theme.textTheme.headlineMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: _isLoading ? null : _googleSignIn,
-                  icon: const Icon(Icons.login),
-                  label: const Text('Sign in with Google'),
-                  style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14)),
+                const SizedBox(height: AppDimens.spacingM),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimens.spacingXL),
+                  child: Text(
+                    'Sign in with your Google account. Your family’s records are kept securely '
+                    'on Health Keeper’s servers in India, so they’re safe if you lose your phone.',
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              if (ApiConfig.showDevSignIn) ...[
-                const SizedBox(height: AppDimens.spacingL),
-                TextButton.icon(
-                  onPressed: _isLoading ? null : _devSignIn,
-                  icon: _isLoading
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.developer_mode, size: 18),
-                  label: Text(_isLoading
-                      ? 'Signing in…'
-                      : 'Developer sign-in (local server)'),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _isLoading ? null : _googleSignIn,
+                    icon: const Icon(Icons.login),
+                    label: const Text('Sign in with Google'),
+                    style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14)),
+                  ),
                 ),
+                if (ApiConfig.showDevSignIn) ...[
+                  const SizedBox(height: AppDimens.spacingL),
+                  TextButton.icon(
+                    onPressed: _isLoading ? null : _devSignIn,
+                    icon: _isLoading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.developer_mode, size: 18),
+                    label: Text(_isLoading
+                        ? 'Signing in…'
+                        : 'Developer sign-in (local server)'),
+                  ),
+                ],
+                const SizedBox(height: AppDimens.spacingXXL),
               ],
-              const SizedBox(height: AppDimens.spacingXXL),
-            ],
+            ),
           ),
         ),
       ),

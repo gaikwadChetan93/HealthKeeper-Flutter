@@ -24,8 +24,9 @@ class TimeRangeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      runSpacing: 4,
       children: _ranges.map((range) {
         final isSelected = range == selected;
         return Padding(
@@ -41,6 +42,7 @@ class TimeRangeSelector extends StatelessWidget {
             ),
             selectedColor: theme.colorScheme.primary,
             visualDensity: VisualDensity.compact,
+            showCheckmark: false,
             padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingS),
           ),
         );
