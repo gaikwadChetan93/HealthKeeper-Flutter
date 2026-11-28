@@ -39,6 +39,28 @@ class Guideline {
         );
 }
 
+/// Plain-language note about a test: the same for everyone, not about anyone's result.
+class LabTestAbout {
+  final String what;
+  final String why;
+
+  /// What a result above the range can be seen with; null when there's nothing useful to say.
+  final String? high;
+  final String? low;
+
+  const LabTestAbout(
+      {required this.what, required this.why, this.high, this.low});
+
+  static LabTestAbout? fromJson(Map<String, dynamic>? j) => j == null
+      ? null
+      : LabTestAbout(
+          what: j['what'] as String,
+          why: j['why'] as String,
+          high: j['high'] as String?,
+          low: j['low'] as String?,
+        );
+}
+
 /// A test in the catalog the app offers.
 class LabTestDef {
   final String id;
@@ -51,6 +73,7 @@ class LabTestDef {
   /// Other units a value may be typed in (the stored [unit] is always allowed).
   final List<String> altUnits;
   final Guideline? guideline;
+  final LabTestAbout? about;
 
   /// Not in the catalog: saved under the person's own name for it, with any unit,
   /// exactly as typed. The server gives it an id from its name and unit.
@@ -65,6 +88,7 @@ class LabTestDef {
     required this.aliases,
     required this.altUnits,
     this.guideline,
+    this.about,
     this.isCustom = false,
   });
 
@@ -104,6 +128,7 @@ class LabTestDef {
           for (final u in ((j['units'] as Map?) ?? const {}).keys) u as String
         ],
         guideline: Guideline.fromJson(j['guideline'] as Map<String, dynamic>?),
+        about: LabTestAbout.fromJson(j['about'] as Map<String, dynamic>?),
       );
 }
 
@@ -276,6 +301,7 @@ class LabSeries {
   final String unit;
   final int decimals;
   final Guideline? guideline;
+  final LabTestAbout? about;
   final List<LabResultItem> points;
 
   const LabSeries({
@@ -284,6 +310,7 @@ class LabSeries {
     required this.unit,
     required this.decimals,
     required this.guideline,
+    this.about,
     required this.points,
   });
 
@@ -295,6 +322,7 @@ class LabSeries {
       unit: t['unit'] as String,
       decimals: (t['decimals'] as num?)?.toInt() ?? 1,
       guideline: Guideline.fromJson(t['guideline'] as Map<String, dynamic>?),
+      about: LabTestAbout.fromJson(t['about'] as Map<String, dynamic>?),
       points: [
         for (final p in j['points'] as List)
           LabResultItem.fromJson(p as Map<String, dynamic>)

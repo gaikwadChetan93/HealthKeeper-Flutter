@@ -10,6 +10,7 @@ import '../../../core/widgets/standard_app_header.dart';
 import '../lab_format.dart';
 import '../widgets/lab_flag_chip.dart';
 import '../widgets/lab_result_tile.dart';
+import '../widgets/lab_test_about_card.dart';
 import '../widgets/lab_trend_chart.dart';
 
 /// One test over time: latest result, chart, and every result.
@@ -111,6 +112,10 @@ class LabTestScreen extends ConsumerWidget {
                   ]),
             ),
           ),
+        if (s.about case final about?) ...[
+          const SizedBox(height: 12),
+          LabTestAboutCard(about: about),
+        ],
         const SizedBox(height: 12),
         Text('All results', style: theme.textTheme.titleSmall),
         for (final p in s.points.reversed)
