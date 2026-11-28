@@ -68,7 +68,7 @@ class _GenericListScreenState extends ConsumerState<GenericListScreen> {
               if (VitalChartConfig.getConfig(widget.moduleKey) != null)
                 IconButton(
                   tooltip: 'Trends',
-                  icon: const Icon(Icons.show_chart, color: Colors.white),
+                  icon: const Icon(Icons.show_chart),
                   onPressed: () => context.push(
                       Routes.vitalChart(widget.moduleKey, widget.memberId)),
                 ),

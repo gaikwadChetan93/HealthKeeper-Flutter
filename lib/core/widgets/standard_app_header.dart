@@ -29,11 +29,10 @@ class StandardAppHeader extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(16, topPadding + 8, 16, 8),
       child: Row(
         children: [
-          if (onBack != null)
-            _RoundIconButton(icon: Icons.arrow_back, onTap: onBack!)
-          else
-            const SizedBox(width: 36),
-          const SizedBox(width: 12),
+          if (onBack != null) ...[
+            _RoundIconButton(icon: Icons.arrow_back, onTap: onBack!),
+            const SizedBox(width: 12),
+          ],
           Expanded(
             child: Text(
               title,
@@ -42,7 +41,11 @@ class StandardAppHeader extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (actions != null) ...actions!,
+          if (actions != null)
+            IconTheme.merge(
+              data: const IconThemeData(color: AppColors.textMuted5),
+              child: Row(mainAxisSize: MainAxisSize.min, children: actions!),
+            ),
         ],
       ),
     );

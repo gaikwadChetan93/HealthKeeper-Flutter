@@ -9,7 +9,6 @@ import '../../../core/config/module_registry.dart';
 import '../../../core/models/domain_config.dart';
 import '../../../core/state/api_providers.dart';
 import '../../../core/state/lab_providers.dart';
-import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/colored_avatar.dart';
 import '../../../core/widgets/standard_app_header.dart';
 import '../../vitals/widgets/vitals_dashboard.dart';

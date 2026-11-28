@@ -6,6 +6,7 @@ import '../../../app/route_constants.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/models/lab_upload.dart';
 import '../../../core/state/lab_upload_providers.dart';
+import '../lab_format.dart';
 
 /// Reports uploaded but not yet saved: being read, ready to review, or stuck.
 class PendingUploads extends ConsumerWidget {
@@ -39,7 +40,7 @@ class _UploadCard extends StatelessWidget {
         ),
       'ready' => (
           const Icon(Icons.check_circle, color: AppColors.zoneNormal),
-          'Complete · ${upload.resultCount} results to review',
+          'Complete · ${LabFormat.results(upload.resultCount)} to review',
           AppColors.zoneNormal
         ),
       'needs_password' => (

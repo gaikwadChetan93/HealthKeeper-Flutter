@@ -40,17 +40,7 @@ class FieldRenderer extends StatelessWidget {
           errorText: error,
           required: d.required,
           keyboardType: TextInputType.numberWithOptions(decimal: d.decimal),
-          suffixIcon: d.unit != null
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Text(
-                    d.unit!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                )
-              : null,
+          suffixText: d.unit,
           onChanged: (v) => onChanged(v),
         ),
       DateFieldDescriptor d => AppDatePickerField(
@@ -114,20 +104,12 @@ class FieldRenderer extends StatelessWidget {
         ),
       FileFieldDescriptor d => _FilePlaceholder(label: d.label),
       MeasurementFieldDescriptor d => AppTextField(
-          label: '${d.label} (${d.unitType.defaultUnit})',
+          label: d.label,
           value: value?.toString(),
           errorText: error,
           required: d.required,
           keyboardType: TextInputType.numberWithOptions(decimal: d.decimal),
-          suffixIcon: Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Text(
-              d.unitType.defaultUnit,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
+          suffixText: d.unitType.defaultUnit,
           onChanged: (v) => onChanged(v),
         ),
     };

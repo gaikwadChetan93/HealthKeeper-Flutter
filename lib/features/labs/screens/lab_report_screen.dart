@@ -32,7 +32,7 @@ class LabReportScreen extends ConsumerWidget {
               if (loaded != null)
                 IconButton(
                   tooltip: 'Delete report',
-                  icon: const Icon(Icons.delete_outline, color: Colors.white),
+                  icon: const Icon(Icons.delete_outline),
                   onPressed: () => _delete(context, ref, loaded),
                 ),
             ],
@@ -65,7 +65,7 @@ class LabReportScreen extends ConsumerWidget {
           if (r.labName != null) Text(r.labName!, style: muted),
           const SizedBox(height: 4),
           Text(
-              '${r.resultCount} results · ${r.flaggedCount} outside their range',
+              '${LabFormat.results(r.resultCount)} · ${r.flaggedCount} outside their range',
               style: muted),
         ]),
       ),
@@ -105,7 +105,9 @@ class LabReportScreen extends ConsumerWidget {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('Delete this report?'),
-        content: Text('All ${r.resultCount} results in it will be deleted.'),
+        content: Text(r.resultCount == 1
+            ? 'The result in it will be deleted.'
+            : 'All ${r.resultCount} results in it will be deleted.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(c, false),
