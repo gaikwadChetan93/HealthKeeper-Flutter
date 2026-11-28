@@ -48,6 +48,9 @@ class Me {
   final String? selfMemberId;
   final bool healthDataConsent;
 
+  /// The privacy notice changed since they agreed: they're asked to agree again.
+  final bool consentUpdateRequired;
+
   const Me({
     required this.id,
     required this.email,
@@ -56,6 +59,7 @@ class Me {
     required this.planFeatures,
     required this.selfMemberId,
     required this.healthDataConsent,
+    this.consentUpdateRequired = false,
   });
 
   int? get maxFamilyMembers =>
@@ -70,5 +74,6 @@ class Me {
             Map<String, dynamic>.from((j['plan'] as Map)['features'] as Map),
         selfMemberId: j['self_member_id'] as String?,
         healthDataConsent: j['health_data_consent'] as bool,
+        consentUpdateRequired: j['consent_update_required'] as bool? ?? false,
       );
 }

@@ -49,27 +49,37 @@ final labSeriesProvider = FutureProvider.autoDispose
     .family<LabSeries, LabSeriesKey>((ref, key) async {
   return LabSeries.fromJson(await ref
           .read(apiClientProvider)
-          .get('/v1/members/${key.memberId}/lab-tests/${key.testId}/series')
+          .get('/v1/members/${key.memberId}/lab-tests/'
+              '${Uri.encodeComponent(key.testId)}/series')
       as Map<String, dynamic>);
 });
 
 /// One result being typed in.
 class LabResultDraft {
   final String testId;
+
+  /// For a custom test (not in the catalog): its name, sent instead of [testId].
+  final String? customName;
   final double value;
   final String unit;
   final double? refLow;
   final double? refHigh;
 
+  LabResultDraft.of(LabTestDef test,
+      {required this.value, required this.unit, this.refLow, this.refHigh})
+      : testId = test.id,
+        customName = test.isCustom ? test.name : null;
+
   const LabResultDraft(
       {required this.testId,
+      this.customName,
       required this.value,
       required this.unit,
       this.refLow,
       this.refHigh});
 
   Map<String, dynamic> toJson() => {
-        'test_id': testId,
+        if (customName != null) 'name': customName else 'test_id': testId,
         'value': value,
         'unit': unit,
         if (refLow != null) 'ref_low': refLow,

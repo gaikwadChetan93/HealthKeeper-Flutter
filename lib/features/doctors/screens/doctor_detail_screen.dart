@@ -44,7 +44,7 @@ class _DoctorDetailScreenState extends ConsumerState<DoctorDetailScreen> {
             if (doctor != null)
               IconButton(
                 tooltip: 'Edit',
-                icon: const Icon(Icons.edit_outlined, color: Colors.white),
+                icon: const Icon(Icons.edit_outlined),
                 onPressed: () => context.push(Routes.editDoctor(doctor.id)),
               ),
           ],

@@ -54,10 +54,21 @@ class LabUploadActions {
     final data = await _api.upload('/v1/members/$memberId/lab-uploads',
         bytes: bytes,
         filename: fileName,
-        contentType: 'application/pdf',
+        contentType: _contentType(fileName),
         idempotencyKey: ApiClient.newIdempotencyKey()) as Map<String, dynamic>;
     _ref.invalidate(labUploadsProvider(memberId));
     return LabUpload.fromJson(data);
+  }
+
+  /// The server checks the file itself; this only labels it.
+  static String _contentType(String fileName) {
+    final ext = fileName.split('.').last.toLowerCase();
+    return switch (ext) {
+      'jpg' || 'jpeg' => 'image/jpeg',
+      'png' => 'image/png',
+      'webp' => 'image/webp',
+      _ => 'application/pdf',
+    };
   }
 
   /// The password goes to the server once to open the PDF; it is never stored.

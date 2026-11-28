@@ -66,7 +66,7 @@ class _UploadPasswordFormState extends ConsumerState<UploadPasswordForm> {
             ),
             const SizedBox(height: 8),
             Text('Used once to open the file, never stored.',
-                style: theme.textTheme.labelSmall
+                style: theme.textTheme.bodySmall
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 20),
             FilledButton(

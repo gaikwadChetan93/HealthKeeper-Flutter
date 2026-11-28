@@ -83,7 +83,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: AppDimens.spacingXL),
+                      const EdgeInsets.all(AppDimens.spacingXL),
                   child: Text(
                     'Health Keeper • Made with love for your wellness',
                     style: theme.textTheme.bodySmall?.copyWith(

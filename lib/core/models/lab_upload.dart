@@ -1,4 +1,4 @@
-/// A report PDF being read by the server, from /v1/lab-uploads.
+/// A report (PDF or photo) being read by the server, from /v1/lab-uploads.
 
 double? _d(dynamic v) => (v as num?)?.toDouble();
 
@@ -61,12 +61,24 @@ class UploadExtracted {
   /// Lines that looked like results but whose test isn't in the list.
   final List<String> unrecognised;
 
+  /// The same lines with what was read from them, to save as custom tests.
+  /// Empty from older servers, which only sent the text.
+  final List<UnrecognisedRow> unrecognisedRows;
+
+  /// "digital", "scan" or "mixed": values from scanned pages were read with
+  /// OCR and are all marked to check.
+  final String source;
+
+  bool get fromScan => source != 'digital';
+
   const UploadExtracted({
+    this.source = 'digital',
     required this.reportDate,
     required this.nameMismatch,
     required this.duplicateOfReportId,
     required this.results,
     required this.unrecognised,
+    this.unrecognisedRows = const [],
   });
 
   factory UploadExtracted.fromJson(Map<String, dynamic> j) => UploadExtracted(
@@ -74,6 +86,7 @@ class UploadExtracted {
             ? null
             : DateTime.parse(j['report_date'] as String),
         nameMismatch: j['name_mismatch'] as bool? ?? false,
+        source: j['source'] as String? ?? 'digital',
         duplicateOfReportId: j['duplicate_of_report_id'] as String?,
         results: [
           for (final r in (j['results'] as List? ?? const []))
@@ -82,6 +95,47 @@ class UploadExtracted {
         unrecognised: [
           for (final u in (j['unrecognised'] as List? ?? const [])) u as String
         ],
+        unrecognisedRows: [
+          for (final u in (j['unrecognised_rows'] as List? ?? const []))
+            UnrecognisedRow.fromJson(u as Map<String, dynamic>)
+        ],
+      );
+}
+
+/// A line that reads like a result for a test that isn't in the list.
+class UnrecognisedRow {
+  final String printedName;
+  final double value;
+  final String unit;
+  final double? refLow;
+  final double? refHigh;
+  final String? refText;
+
+  /// Read from a scanned page with OCR: to be checked against the report.
+  final bool scanned;
+
+  const UnrecognisedRow({
+    required this.printedName,
+    required this.value,
+    required this.unit,
+    this.refLow,
+    this.refHigh,
+    this.refText,
+    this.scanned = false,
+  });
+
+  /// As shown in the list: "Mystery Marker  12 U/mL".
+  String get text =>
+      '$printedName  ${value == value.roundToDouble() ? value.toInt() : value} $unit';
+
+  factory UnrecognisedRow.fromJson(Map<String, dynamic> j) => UnrecognisedRow(
+        printedName: j['printed_name'] as String,
+        value: (j['value'] as num).toDouble(),
+        unit: j['unit'] as String? ?? '',
+        refLow: (j['ref_low'] as num?)?.toDouble(),
+        refHigh: (j['ref_high'] as num?)?.toDouble(),
+        refText: j['ref_text'] as String?,
+        scanned: j['scanned'] as bool? ?? false,
       );
 }
 

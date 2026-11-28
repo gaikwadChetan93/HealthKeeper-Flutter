@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/models/lab.dart';
 import '../../../core/state/lab_providers.dart';
+import 'custom_test_dialog.dart';
 import 'suggest_test_dialog.dart';
 
 /// Search the test list by name or by what labs print (e.g. "SGPT", "FBS").
@@ -75,10 +76,31 @@ class _TestPickerState extends ConsumerState<_TestPicker> {
                   ));
                 }
               }
+              rows.add(Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                child: Text('Can’t find your test?',
+                    style: theme.textTheme.labelLarge
+                        ?.copyWith(color: theme.colorScheme.primary)),
+              ));
+              rows.add(ListTile(
+                leading: const Icon(Icons.edit_outlined),
+                title: Text(_query.trim().length < 2
+                    ? 'Add it under your own name'
+                    : 'Add “${_query.trim()}” as your own test'),
+                subtitle: const Text('Saved as you type it, with any unit'),
+                onTap: () async {
+                  final test =
+                      await showCustomTestDialog(context, initialName: _query);
+                  if (test != null && context.mounted) {
+                    Navigator.pop(context, test);
+                  }
+                },
+              ));
               rows.add(ListTile(
                 leading: const Icon(Icons.add_comment_outlined),
-                title: const Text('Can’t find your test?'),
-                subtitle: const Text('Suggest it and we’ll add it'),
+                title: const Text('Suggest it to us'),
+                subtitle: const Text(
+                    'We review suggestions and add them to the list'),
                 onTap: () =>
                     showSuggestTestDialog(context, ref, initialName: _query),
               ));

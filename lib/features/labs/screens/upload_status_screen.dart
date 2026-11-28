@@ -9,6 +9,7 @@ import '../../../core/state/lab_upload_providers.dart';
 import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/standard_app_header.dart';
 import '../widgets/upload_password_form.dart';
+import '../lab_format.dart';
 
 /// Shows a report being read: processing, then complete (or what went wrong).
 class UploadStatusScreen extends ConsumerWidget {
@@ -93,7 +94,7 @@ class _Complete extends StatelessWidget {
         Text(
           ex.results.isEmpty
               ? 'We couldn’t find test results we recognise in this report. You can add them yourself.'
-              : 'Found ${ex.results.length} results${review > 0 ? ', $review to double-check' : ''}. '
+              : 'Found ${LabFormat.results(ex.results.length)}${review > 0 ? ', $review to double-check' : ''}. '
                   'Check the values, correct anything that’s wrong, then save.',
           textAlign: TextAlign.center,
           style: theme.textTheme.bodyMedium,

@@ -7,7 +7,7 @@ import '../../../app/route_constants.dart';
 import '../../../core/state/lab_upload_providers.dart';
 import '../../../core/widgets/load_error_view.dart';
 
-/// "Upload a PDF report" or "Type in results".
+/// "Upload a report" (a PDF or a photo) or "Type in results".
 Future<void> showAddLabChoice(
     BuildContext context, WidgetRef ref, String memberId) {
   return showModalBottomSheet<void>(
@@ -16,8 +16,9 @@ Future<void> showAddLabChoice(
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         ListTile(
           leading: const Icon(Icons.upload_file),
-          title: const Text('Upload a PDF report'),
-          subtitle: const Text('We read the values for you to check'),
+          title: const Text('Upload a report'),
+          subtitle: const Text(
+              'A PDF or a photo. We read the values for you to check'),
           onTap: () {
             Navigator.pop(c);
             uploadLabReport(context, ref, memberId);
@@ -37,11 +38,12 @@ Future<void> showAddLabChoice(
   );
 }
 
-/// Picks a PDF, sends it, and opens the status screen while the server reads it.
+/// Picks a PDF or an image (a photo or scan of the report), sends it, and opens the status screen while the server reads it.
 Future<void> uploadLabReport(
     BuildContext context, WidgetRef ref, String memberId) async {
   final file = await FilePicker.pickFile(
-      type: FileType.custom, allowedExtensions: const ['pdf']);
+      type: FileType.custom,
+      allowedExtensions: const ['pdf', 'jpg', 'jpeg', 'png', 'webp']);
   if (file == null || !context.mounted) return;
   final bytes = await file.readAsBytes();
   if (!context.mounted) return;

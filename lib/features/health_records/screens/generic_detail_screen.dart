@@ -41,12 +41,12 @@ class GenericDetailScreen extends ConsumerWidget {
             actions: [
               if (loaded != null) ...[
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined, color: Colors.white),
+                  icon: const Icon(Icons.edit_outlined),
                   onPressed: () => context.push(
                       Routes.healthEdit(moduleKey, loaded.memberId, loaded.id)),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.white),
+                  icon: const Icon(Icons.delete_outline),
                   onPressed: () => _confirmDelete(context, ref, loaded),
                 ),
               ],

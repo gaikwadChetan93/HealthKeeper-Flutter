@@ -53,7 +53,7 @@ class _VitalTrendScreenState extends ConsumerState<VitalTrendScreen> {
             actions: [
               IconButton(
                 tooltip: 'All readings',
-                icon: const Icon(Icons.list_alt, color: Colors.white),
+                icon: const Icon(Icons.list_alt),
                 onPressed: () => context
                     .push(Routes.healthList(widget.moduleKey, widget.memberId)),
               ),

@@ -82,7 +82,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       horizontal: AppDimens.spacingXL),
                   child: Text(
                     'Sign in with your Google account. Your family’s records are kept securely '
-                    'on Health Keeper’s servers in India, so they’re safe if you lose your phone.',
+                    'and encrypted on Health Keeper’s servers, so they’re safe if you lose your phone.',
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,

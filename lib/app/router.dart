@@ -26,6 +26,7 @@ import '../features/labs/screens/upload_status_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/vitals/screens/vital_trend_screen.dart';
 import '../features/privacy/screens/privacy_and_data_screen.dart';
+import '../features/privacy/screens/privacy_choices_screen.dart';
 import '../features/privacy/screens/data_export_screen.dart';
 import '../features/privacy/screens/delete_account_screen.dart';
 import '../features/subscription/screens/paywall_screen.dart';
@@ -217,6 +218,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
           path: Routes.privacyAndData,
           builder: (_, __) => const PrivacyAndDataScreen()),
+      GoRoute(
+          path: Routes.privacyChoices,
+          builder: (_, __) => const PrivacyChoicesScreen()),
       GoRoute(
           path: Routes.dataExport,
           builder: (_, __) => const DataExportScreen()),

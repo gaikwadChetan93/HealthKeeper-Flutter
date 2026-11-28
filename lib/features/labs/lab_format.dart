@@ -12,6 +12,9 @@ class LabFormat {
     return s.contains('.') ? s.replaceFirst(RegExp(r'\.?0+$'), '') : s;
   }
 
+  /// "1 result", "3 results".
+  static String results(int n) => n == 1 ? '1 result' : '$n results';
+
   static String value(LabResultItem r) =>
       '${number(r.value, r.decimals + 1)} ${r.unit}'.trim();
 

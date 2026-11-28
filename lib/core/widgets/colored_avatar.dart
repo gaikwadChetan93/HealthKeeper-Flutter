@@ -42,7 +42,11 @@ class ColoredAvatar extends StatelessWidget {
           style: TextStyle(
             fontSize: size * 0.35,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            // Readable on both the light and the dark avatar colours.
+            color: ThemeData.estimateBrightnessForColor(bgColor) ==
+                    Brightness.dark
+                ? Colors.white
+                : Colors.black87,
           ),
         ),
       ),

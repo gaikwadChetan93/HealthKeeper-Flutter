@@ -45,7 +45,7 @@ class ReviewUploadScreen extends ConsumerWidget {
             if (upload.valueOrNull?.status == 'ready')
               IconButton(
                 tooltip: 'Discard this upload',
-                icon: const Icon(Icons.delete_outline, color: Colors.white),
+                icon: const Icon(Icons.delete_outline),
                 onPressed: () => _discard(context, ref, upload.value!),
               ),
           ],
@@ -62,7 +62,7 @@ class ReviewUploadScreen extends ConsumerWidget {
       builder: (c) => AlertDialog(
         title: const Text('Discard this upload?'),
         content: const Text(
-            'The PDF and what was read from it will be deleted. Nothing is saved.'),
+            'The file and what was read from it will be deleted. Nothing is saved.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(c, false),

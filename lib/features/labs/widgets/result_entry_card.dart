@@ -44,6 +44,23 @@ class ResultEntry {
     if (row.refHigh != null) high.text = LabFormat.number(row.refHigh!, 4);
   }
 
+  /// A line the reader couldn't match, saved under its printed name as a custom test.
+  ResultEntry.fromUnrecognised(UnrecognisedRow row)
+      : test = LabTestDef.custom(row.printedName, unit: row.unit),
+        unit = row.unit,
+        printed =
+            '“${row.printedName}” ${LabFormat.number(row.value, 4)} ${row.unit}'
+                '${row.refText == null ? '' : ' · ${row.refText!.replaceAll('\n', ' ')}'}',
+        issues = [
+          'Your own test (not in our list)',
+          if (row.scanned) 'Read from a scan: check it',
+        ],
+        needsReview = true {
+    value.text = LabFormat.number(row.value, 4);
+    if (row.refLow != null) low.text = LabFormat.number(row.refLow!, 4);
+    if (row.refHigh != null) high.text = LabFormat.number(row.refHigh!, 4);
+  }
+
   static double? parse(String s) =>
       double.tryParse(s.trim().replaceAll(',', '.'));
 
@@ -100,7 +117,7 @@ class ResultEntryCard extends StatelessWidget {
                       Text(entry.printed ?? t.category,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall?.copyWith(
+                          style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant)),
                     ]),
               ),
@@ -127,12 +144,13 @@ class ResultEntryCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 12, top: 4),
                 child: Text('Won’t be saved',
-                    style: theme.textTheme.labelSmall
+                    style: theme.textTheme.bodySmall
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               )
             else ...[
-              if (entry.errors['test_id'] != null)
-                Text(entry.errors['test_id']!,
+              if ((entry.errors['test_id'] ?? entry.errors['name'])
+                  case final testError?)
+                Text(testError,
                     style: TextStyle(
                         color: theme.colorScheme.error, fontSize: 12)),
               const SizedBox(height: 8),
@@ -153,21 +171,30 @@ class ResultEntryCard extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         flex: 1,
-                        child: DropdownButtonFormField<String>(
-                          initialValue: entry.unit,
-                          isExpanded: true,
-                          decoration: dec('Unit', 'unit'),
-                          items: [
-                            for (final u in t.units)
-                              DropdownMenuItem(
-                                  value: u,
-                                  child: Text(u.isEmpty ? '(none)' : u)),
-                          ],
-                          onChanged: (u) {
-                            entry.unit = u ?? t.unit;
-                            onChanged();
-                          },
-                        ),
+                        child: t.isCustom
+                            ? TextFormField(
+                                initialValue: entry.unit,
+                                decoration: dec('Unit', 'unit'),
+                                onChanged: (u) {
+                                  entry.unit = u.trim();
+                                  onChanged();
+                                },
+                              )
+                            : DropdownButtonFormField<String>(
+                                initialValue: entry.unit,
+                                isExpanded: true,
+                                decoration: dec('Unit', 'unit'),
+                                items: [
+                                  for (final u in t.units)
+                                    DropdownMenuItem(
+                                        value: u,
+                                        child: Text(u.isEmpty ? '(none)' : u)),
+                                ],
+                                onChanged: (u) {
+                                  entry.unit = u ?? t.unit;
+                                  onChanged();
+                                },
+                              ),
                       ),
                     ]),
               ),
@@ -204,7 +231,7 @@ class ResultEntryCard extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8, right: 8),
                   child: Text(
                     'Without a range we compare with published guideline cut-offs (${t.guideline!.source}).',
-                    style: theme.textTheme.labelSmall
+                    style: theme.textTheme.bodySmall
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                 ),

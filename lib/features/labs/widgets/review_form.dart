@@ -15,6 +15,7 @@ import '../../../core/widgets/load_error_view.dart';
 import 'result_entry_card.dart';
 import 'review_notices.dart';
 import 'test_picker_sheet.dart';
+import '../lab_format.dart';
 
 /// The editable list of what was read, with date and lab; saves the reviewed values.
 class ReviewForm extends ConsumerStatefulWidget {
@@ -32,6 +33,11 @@ class ReviewFormState extends ConsumerState<ReviewForm> {
   late DateTime? _date = widget.upload.extracted!.reportDate;
   String _lab = '';
   bool _saving = false;
+
+  /// Unrecognised lines not yet added as custom tests.
+  late final List<UnrecognisedRow> _unadded = [
+    ...widget.upload.extracted!.unrecognisedRows
+  ];
 
   @override
   void initState() {
@@ -88,8 +94,8 @@ class ReviewFormState extends ConsumerState<ReviewForm> {
         labName: _lab,
         results: [
           for (final e in included)
-            LabResultDraft(
-              testId: e.test.id,
+            LabResultDraft.of(
+              e.test,
               value: ResultEntry.parse(e.value.text)!,
               unit: e.unit,
               refLow: ResultEntry.parse(e.low.text),
@@ -98,7 +104,7 @@ class ReviewFormState extends ConsumerState<ReviewForm> {
         ],
       );
       if (!mounted) return;
-      showMessage(context, 'Saved ${report.resultCount} results');
+      showMessage(context, 'Saved ${LabFormat.results(report.resultCount)}');
       context.pushReplacement(Routes.labReport(report.id));
     } on ApiException catch (e) {
       setState(() {
@@ -115,6 +121,12 @@ class ReviewFormState extends ConsumerState<ReviewForm> {
     }
   }
 
+  void _addUnrecognised(UnrecognisedRow row) => setState(() {
+        _unadded.remove(row);
+        // With the other results to check, at the top.
+        _entries.insert(0, ResultEntry.fromUnrecognised(row));
+      });
+
   Future<void> _addTest() async {
     final test = await showTestPicker(context,
         exclude: {for (final e in _entries) e.test.id});
@@ -130,7 +142,7 @@ class ReviewFormState extends ConsumerState<ReviewForm> {
             style: theme.textTheme.titleSmall
                 ?.copyWith(color: theme.colorScheme.primary)),
         Text(note,
-            style: theme.textTheme.labelSmall
+            style: theme.textTheme.bodySmall
                 ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
       ]),
     );
@@ -187,7 +199,10 @@ class ReviewFormState extends ConsumerState<ReviewForm> {
           icon: const Icon(Icons.add),
           label: const Text('Add a test that was missed'),
         ),
-        UnrecognisedList(lines: ex.unrecognised),
+        UnrecognisedList(
+            lines: ex.unrecognisedRows.isEmpty ? ex.unrecognised : const [],
+            rows: _unadded,
+            onAdd: _addUnrecognised),
         const SizedBox(height: 16),
         FilledButton(
           onPressed: _saving ? null : _save,
