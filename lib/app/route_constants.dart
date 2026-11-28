@@ -38,7 +38,7 @@ class Routes {
   static String labs(String memberId) => '/labs/$memberId';
   static String labAdd(String memberId) => '/labs/$memberId/add';
   static String labTest(String memberId, String testId) =>
-      '/labs/$memberId/test/$testId';
+      '/labs/$memberId/test/${Uri.encodeComponent(testId)}';
   static String labReport(String reportId) => '/lab-report/$reportId';
   static String labUpload(String uploadId) => '/lab-upload/$uploadId';
   static String labUploadReview(String uploadId) =>

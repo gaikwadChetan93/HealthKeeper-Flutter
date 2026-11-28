@@ -6,14 +6,15 @@ import '../../../core/widgets/load_error_view.dart';
 
 /// "Can't find your test?" — sent for review, then added to the list for everyone.
 Future<void> showSuggestTestDialog(BuildContext context, WidgetRef ref,
-    {String initialName = ''}) async {
+    {String initialName = '', String initialUnit = ''}) async {
   final name = TextEditingController(text: initialName);
-  final unit = TextEditingController();
+  final unit = TextEditingController(text: initialUnit);
   final ok = await showDialog<bool>(
     context: context,
     builder: (c) => AlertDialog(
       title: const Text('Suggest a test'),
-      content: Column(
+      content: SingleChildScrollView(
+          child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
@@ -28,7 +29,7 @@ Future<void> showSuggestTestDialog(BuildContext context, WidgetRef ref,
               controller: unit,
               decoration: const InputDecoration(labelText: 'Unit (optional)')),
         ],
-      ),
+      )),
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(c, false),

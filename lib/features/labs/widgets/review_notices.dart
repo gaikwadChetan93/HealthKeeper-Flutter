@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/route_constants.dart';
 import '../../../core/models/lab_upload.dart';
 import 'suggest_test_dialog.dart';
+import '../lab_format.dart';
 
 /// Warnings before saving: someone else's report, or one already saved.
 class ReviewNotices extends StatelessWidget {
@@ -28,10 +29,17 @@ class ReviewNotices extends StatelessWidget {
               ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
       const SizedBox(height: 4),
       Text(
-        'We read ${extracted.results.length} results. Check each value against the report'
+        'We read ${LabFormat.results(extracted.results.length)}. Check each value against the report'
         '${review > 0 ? ' — $review are marked to double-check' : ''}. Untick anything that’s wrong.',
         style: theme.textTheme.bodyMedium,
       ),
+      if (extracted.fromScan)
+        const _Banner(
+          icon: Icons.document_scanner_outlined,
+          text:
+              'This report was a scan, so the values were read from an image. '
+              'Check every value and decimal point against the paper report before saving.',
+        ),
       if (extracted.nameMismatch)
         _Banner(
           icon: Icons.person_search_outlined,
@@ -83,30 +91,49 @@ class _Banner extends StatelessWidget {
 }
 
 /// Lines that looked like results but whose test we don't know, so nothing is guessed.
+/// Each can be added as the person's own test (under its printed name) or suggested to us.
 class UnrecognisedList extends ConsumerWidget {
   final List<String> lines;
-  const UnrecognisedList({super.key, required this.lines});
+
+  /// What was read from each line; when given, each line can be added.
+  final List<UnrecognisedRow> rows;
+  final ValueChanged<UnrecognisedRow>? onAdd;
+
+  const UnrecognisedList(
+      {super.key, required this.lines, this.rows = const [], this.onAdd});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (lines.isEmpty) return const SizedBox.shrink();
+    final items = rows.isNotEmpty
+        ? [for (final r in rows) (r.text, r)]
+        : [for (final l in lines) (l, null as UnrecognisedRow?)];
+    if (items.isEmpty) return const SizedBox.shrink();
     return ExpansionTile(
+      initiallyExpanded: true,
       tilePadding: EdgeInsets.zero,
       title: Text(
-          '${lines.length} line${lines.length == 1 ? '' : 's'} we didn’t recognise'),
-      subtitle: const Text(
-          'Not saved. Add them as tests, or suggest the test to us.'),
+          '${items.length} line${items.length == 1 ? '' : 's'} we didn’t recognise'),
+      subtitle: Text(onAdd != null && rows.isNotEmpty
+          ? 'Not saved unless you add them. Add one to save it under the name printed, or suggest the test to us.'
+          : 'Not saved. Add them as tests, or suggest the test to us.'),
       children: [
-        for (final l in lines)
+        for (final (text, row) in items)
           ListTile(
             dense: true,
             contentPadding: EdgeInsets.zero,
-            title: Text(l),
-            trailing: TextButton(
-              onPressed: () => showSuggestTestDialog(context, ref,
-                  initialName: l.split(RegExp(r'\s{2,}')).first),
-              child: const Text('Suggest'),
-            ),
+            title: Text(text),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+              TextButton(
+                onPressed: () => showSuggestTestDialog(context, ref,
+                    initialName:
+                        row?.printedName ?? text.split(RegExp(r'\s{2,}')).first,
+                    initialUnit: row?.unit ?? ''),
+                child: const Text('Suggest'),
+              ),
+              if (row != null && onAdd != null)
+                FilledButton.tonal(
+                    onPressed: () => onAdd!(row), child: const Text('Add')),
+            ]),
           ),
       ],
     );

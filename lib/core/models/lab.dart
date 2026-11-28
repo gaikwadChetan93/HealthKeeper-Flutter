@@ -52,6 +52,10 @@ class LabTestDef {
   final List<String> altUnits;
   final Guideline? guideline;
 
+  /// Not in the catalog: saved under the person's own name for it, with any unit,
+  /// exactly as typed. The server gives it an id from its name and unit.
+  final bool isCustom;
+
   const LabTestDef({
     required this.id,
     required this.name,
@@ -61,7 +65,22 @@ class LabTestDef {
     required this.aliases,
     required this.altUnits,
     this.guideline,
+    this.isCustom = false,
   });
+
+  /// Shown under this category, as the server files custom tests.
+  static const customCategory = 'Added by you';
+
+  factory LabTestDef.custom(String name, {String unit = ''}) => LabTestDef(
+        id: '',
+        name: name.trim().replaceAll(RegExp(r'\s+'), ' '),
+        category: customCategory,
+        unit: unit.trim(),
+        decimals: 3,
+        aliases: const [],
+        altUnits: const [],
+        isCustom: true,
+      );
 
   List<String> get units => [unit, ...altUnits.where((u) => u != unit)];
 
@@ -130,6 +149,9 @@ class LabResultItem {
   final String? rangeSourceText;
   final int version;
 
+  /// A test the person named themselves (not in the catalog).
+  final bool isCustom;
+
   const LabResultItem({
     required this.id,
     required this.reportId,
@@ -150,6 +172,7 @@ class LabResultItem {
     required this.rangeSource,
     required this.rangeSourceText,
     required this.version,
+    this.isCustom = false,
   });
 
   bool get isFlagged => flag == 'low' || flag == 'high' || flag == 'borderline';
@@ -174,6 +197,7 @@ class LabResultItem {
         rangeSource: j['range_source'] as String,
         rangeSourceText: j['range_source_text'] as String?,
         version: j['version'] as int,
+        isCustom: j['custom'] as bool? ?? false,
       );
 }
 

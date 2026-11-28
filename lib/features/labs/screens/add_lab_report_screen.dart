@@ -13,6 +13,7 @@ import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/standard_app_header.dart';
 import '../widgets/result_entry_card.dart';
 import '../widgets/test_picker_sheet.dart';
+import '../lab_format.dart';
 
 /// Type in a lab report: date, lab, and the tests on it.
 class AddLabReportScreen extends ConsumerStatefulWidget {
@@ -84,8 +85,8 @@ class _AddLabReportScreenState extends ConsumerState<AddLabReportScreen> {
         idempotencyKey: _idempotencyKey,
         results: [
           for (final e in _entries)
-            LabResultDraft(
-              testId: e.test.id,
+            LabResultDraft.of(
+              e.test,
               value: ResultEntry.parse(e.value.text)!,
               unit: e.unit,
               refLow: ResultEntry.parse(e.low.text),
@@ -94,7 +95,7 @@ class _AddLabReportScreenState extends ConsumerState<AddLabReportScreen> {
         ],
       );
       if (!mounted) return;
-      showMessage(context, 'Saved ${report.resultCount} results');
+      showMessage(context, 'Saved ${LabFormat.results(report.resultCount)}');
       context.pushReplacement(Routes.labReport(report.id));
     } on ApiException catch (e) {
       // Errors come back as "results.2.value"; show each under its test.
