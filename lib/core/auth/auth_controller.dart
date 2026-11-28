@@ -67,20 +67,28 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   /// Local development only: the backend accepts this when HK_ENV=local.
-  Future<void> devSignIn(String email, String name) async {
+  ///
+  /// [restore] is sent after the person chose to restore an account that is
+  /// waiting to be deleted (the API answered `account_pending_deletion`).
+  Future<void> devSignIn(String email, String name,
+      {bool restore = false}) async {
     final data = await _api.post('/v1/auth/dev-token', auth: false, body: {
       'email': email,
       'name': name,
       'platform': 'android',
-      'device_name': 'Emulator'
+      'device_name': 'Emulator',
+      'restore': restore,
     });
     await _signedIn(data as Map<String, dynamic>);
   }
 
   /// Exchanges a Google ID token (from the Google sign-in SDK) for our tokens.
-  Future<void> googleSignIn(String idToken) async {
-    final data = await _api.post('/v1/auth/token',
-        auth: false, body: {'id_token': idToken, 'platform': 'android'});
+  Future<void> googleSignIn(String idToken, {bool restore = false}) async {
+    final data = await _api.post('/v1/auth/token', auth: false, body: {
+      'id_token': idToken,
+      'platform': 'android',
+      'restore': restore,
+    });
     await _signedIn(data as Map<String, dynamic>);
   }
 
@@ -88,6 +96,16 @@ class AuthController extends StateNotifier<AuthState> {
     await _api.tokens
         .save(access: data['access_token'], refresh: data['refresh_token']);
     await reloadMe();
+  }
+
+  /// Deletes the account. The server signs out every device at once and
+  /// removes everything for good after the grace period. Returns that date.
+  Future<DateTime> deleteAccount() async {
+    final data = await _api.delete('/v1/me', body: {'confirm': 'DELETE'})
+        as Map<String, dynamic>;
+    await _api.tokens.clear();
+    state = const AuthState(AuthStatus.signedOut);
+    return DateTime.parse(data['purge_after'] as String).toLocal();
   }
 
   Future<void> signOut() async {
