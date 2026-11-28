@@ -22,7 +22,8 @@ class AuthState {
 
   const AuthState(this.status, {this.me, this.startupError});
 
-  bool get needsConsent => me != null && !me!.healthDataConsent;
+  bool get needsConsent =>
+      me != null && (!me!.healthDataConsent || me!.consentUpdateRequired);
   bool get needsProfile =>
       me != null && me!.healthDataConsent && me!.selfMemberId == null;
   bool get isReady =>

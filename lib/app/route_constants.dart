@@ -50,6 +50,7 @@ class Routes {
 
   // Settings sub-screens
   static const privacyAndData = '/privacy';
+  static const privacyChoices = '/privacy/choices';
   static const dataExport = '/export';
   static const deleteAccount = '/delete-account';
   static const inviteFriends = '/invite';

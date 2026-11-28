@@ -15,6 +15,7 @@ import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/colored_avatar.dart';
 import '../../../core/widgets/load_error_view.dart';
 import '../../../core/widgets/standard_app_header.dart';
+import '../widgets/attestation_choice.dart';
 import '../widgets/member_dialogs.dart';
 
 /// Adds or edits a family member. With [creatingSelf] it is the one-time
@@ -37,7 +38,9 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
   DateTime? _dob;
   String? _sex;
   String? _relation;
-  bool _attested = false;
+
+  /// The permission confirmed for someone else: agreed | carer | legal_representative.
+  String? _attestation;
   bool _saving = false;
   Map<String, String> _errors = {};
   Member? _editing;
@@ -79,7 +82,8 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
       if (_name.trim().isEmpty) 'name': 'Name is required',
       if (_dob == null) 'date_of_birth': 'Date of birth is required',
       if (_relation == null) 'relation': 'Relation is required',
-      if (!isEdit && !_isSelf && !_attested) 'attested': 'Please confirm',
+      if (!isEdit && !_isSelf && _attestation == null)
+        'attestation': 'Choose one',
     };
     setState(() => _errors = errors);
     if (errors.isNotEmpty) return;
@@ -96,7 +100,8 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
       if (isEdit) {
         await members.edit(_editing!, body);
       } else {
-        await members.create({...body, 'attested': !_isSelf && _attested},
+        await members.create(
+            {...body, if (!_isSelf) 'attestation': _attestation},
             idempotencyKey: _idempotencyKey);
       }
       if (!mounted) return;
@@ -221,18 +226,10 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
         ),
         if (!isEdit && !_isSelf) ...[
           const SizedBox(height: AppDimens.spacingM),
-          CheckboxListTile(
-            value: _attested,
-            onChanged: (v) => _update('attested', () => _attested = v ?? false),
-            controlAffinity: ListTileControlAffinity.leading,
-            contentPadding: EdgeInsets.zero,
-            title: const Text(
-                'They are 18 or older and agreed to me keeping their health records.'),
-            subtitle: _errors['attested'] != null
-                ? Text(_errors['attested']!,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error))
-                : null,
+          AttestationChoice(
+            value: _attestation,
+            errorText: _errors['attestation'],
+            onChanged: (v) => _update('attestation', () => _attestation = v),
           ),
         ],
       ];
